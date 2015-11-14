@@ -1,0 +1,7 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <!-- Settings, should always be in the overflow -->
+    <item android:id="@+id/action_validate"
+        android:title="validate"
+        android:icon="@drawable/ic_action_validate"
+        app:showAsAction="always" />
+</menu>

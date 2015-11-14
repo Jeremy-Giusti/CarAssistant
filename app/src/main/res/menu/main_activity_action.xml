@@ -1,0 +1,11 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <!-- Settings, should always be in the overflow -->
+    <item android:id="@+id/action_speech"
+        android:title="openSpeechRecognition"
+        android:icon="@drawable/ic_action_speech"
+        app:showAsAction="always" />
+    <item android:id="@+id/action_setting"
+        android:title="openSettings"
+        android:icon="@drawable/ic_action_setting"
+        app:showAsAction="always" />
+</menu>

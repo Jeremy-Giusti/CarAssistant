@@ -1,0 +1,54 @@
+<resources>
+    <string name="app_name">AndroidCar</string>
+    <string name="notif_title">AndroidCar</string>
+    <string name="notif_text">listening for command</string>
+    <string name="setting_trigger">Trigger name :</string>
+    <string name="setting_show_grid">Show grid overlay</string>
+    <string name="setting_auto_close_app">Auto close app on start</string>
+    <string name="setting_stop_service">Voice recognition service</string>
+    <string name="setting_show_cmd_list">Show command list</string>
+    <string name="trigger_change_condition">Name must be a single word</string>
+
+
+    <!--TODO intent divers
+        gps, music, sms, appel+hp, film,  enregistre audio,
+        -> PASSER AU REGEX
+    -->
+
+
+    <string name="command_trigger">Jack</string>
+
+    <!--one word parseable command should not be regex-->
+   <string name="command_call">call</string>
+   <string name="command_write">write</string>
+   <string name="command_delete">delete</string>
+
+   <string name="command_show_cmd">.*?show the command list.*?</string>
+   <string name="command_show_settings">.*?show the application\'s settings.*?</string>
+
+   <string name="command_speaker">.*? set speakerphone on .*?</string>
+
+   <string name="command_end_call">.*? end call.*?</string>
+
+   <string name="command_listen">.*? listen .*?</string>
+   <string name="command_stop_listening">.*? stop listening .*?</string>
+
+   <string name="command_grid_display">.*? display the grid .*?</string>
+   <string name="command_grid_hide">.*? hide the grid .*?</string>
+
+   <string name="command_touch">.*? click on .*?</string>
+   <string name="command_swipe">.*? swipe from .*?</string>
+
+   <string name="command_longclick">.*? long click on .*?</string>
+   <string name="command_home">.*? go to home .*?</string>
+   <string name="command_back">.*? go back .*?</string>
+   <string name="command_volume">.*? set volume to .*?</string>
+   <string name="command_volume_up">.*? increase sound volume .*?</string>
+   <string name="command_volume_down">.*? decrease sound volume .*?</string>
+   <string name="command_enable_gps">.*? enable gps .*?</string>
+   <string name="command_disable_gps">.*? enable gps .*?</string>
+
+   <string name="command_quit">.*? end the application .*?</string>
+
+
+</resources>

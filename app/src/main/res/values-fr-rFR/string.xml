@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="command_trigger">Roger</string>
+
+    <string name="command_show_cmd">.*?(affiche|ouvre).*?(liste|les|page).*?(commande|commandes).*?</string>
+    <string name="command_show_settings">.*?(affiche|ouvre).*?(liste|les|page).*?(paramètres|paramètre).*?</string>
+
+    <string name="command_listen">.*?(écoute).*?</string>
+    <string name="command_stop_listening">.*?(arrète|stop).*?(écouter|l\'écoute)</string>
+
+    <string name="command_speaker">.*?(met|active).*?(haut-parleur).*?</string>
+    <string name="command_call">appel</string>
+    <string name="command_end_call">.*?((termine .*? l\'appel)|raccroche).*?</string>
+
+
+    <string name="command_grid_display">.*?(affiche)\\s(la)\\s(grille).*?</string>
+    <string name="command_grid_hide">.*?(cache)\\s(la)\\s(grille).*?</string>
+
+    <string name="command_touch">.*?(clic|clique)\\s(en|sur).*?</string>
+    <string name="command_swipe">.*?(glisse|swipe)\\s(de).*?(à|vers|jusquà).*?</string>
+    <string name="command_longclick">.*?(long\\s(clic|clique)|(clic|clique)\\slong).*?</string>
+    <string name="command_write">écrit</string>
+    <string name="command_delete">supprime</string>
+    <string name="command_home">.*?(retourne|retour)\\s(à|vers)\\s(l\'écran d\'|l\')(accueil).*?</string>
+    <string name="command_back">.*?(precedent).*?</string>
+    <string name="command_volume">.*?(met)\\s(le)\\s(volume/son).*?(à).*?</string>
+    <string name="command_volume_up">.*?(monte|augmente)\\s(le)\\s(volume|son).*?</string>
+    <string name="command_volume_down">.*?(baisse|diminue)\\s(le)\\s(volume|son).*?</string>
+    <string name="command_quit">.*?(ferme|termine|quitte)\\s(l\'application).*?</string>
+
+
+</resources>
