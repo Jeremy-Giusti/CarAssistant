@@ -1,4 +1,4 @@
-package com.giusti.jeremy.androidcar.ScreenMapping;
+package com.giusti.jeremy.androidcar.ScreenOverlay;
 
 import android.content.Context;
 import android.graphics.Point;

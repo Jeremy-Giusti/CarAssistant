@@ -1,4 +1,4 @@
-package com.giusti.jeremy.androidcar.ScreenMapping;
+package com.giusti.jeremy.androidcar.ScreenOverlay;
 
 /**
  * Created by jgiusti on 20/10/2015.

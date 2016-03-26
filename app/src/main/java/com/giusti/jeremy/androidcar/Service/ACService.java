@@ -20,7 +20,7 @@ import com.giusti.jeremy.androidcar.Commands.CmdInterpretor;
 import com.giusti.jeremy.androidcar.Constants.ACPreference;
 import com.giusti.jeremy.androidcar.Constants.ISettingChangeListener;
 import com.giusti.jeremy.androidcar.R;
-import com.giusti.jeremy.androidcar.ScreenMapping.ScreenMapper;
+import com.giusti.jeremy.androidcar.ScreenOverlay.ScreenMapper;
 import com.giusti.jeremy.androidcar.SpeechRecognition.ISpeechResultListener;
 import com.giusti.jeremy.androidcar.SpeechRecognition.SpeechListener;
 

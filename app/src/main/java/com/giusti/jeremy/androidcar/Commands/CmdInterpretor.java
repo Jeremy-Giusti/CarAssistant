@@ -9,10 +9,10 @@ import android.util.Pair;
 
 import com.giusti.jeremy.androidcar.Constants.ACPreference;
 import com.giusti.jeremy.androidcar.ContactManager;
-import com.giusti.jeremy.androidcar.ScreenMapping.AlphaNumCoord;
+import com.giusti.jeremy.androidcar.ScreenOverlay.AlphaNumCoord;
 import com.giusti.jeremy.androidcar.Constants.Constants;
 import com.giusti.jeremy.androidcar.R;
-import com.giusti.jeremy.androidcar.ScreenMapping.CoordinateConverter;
+import com.giusti.jeremy.androidcar.ScreenOverlay.CoordinateConverter;
 
 import org.apache.commons.lang3.StringUtils;
 

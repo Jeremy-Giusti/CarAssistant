@@ -16,7 +16,7 @@
     <string name="command_grid_display">.*?(affiche)\\s(la)\\s(grille).*?</string>
     <string name="command_grid_hide">.*?(cache)\\s(la)\\s(grille).*?</string>
 
-    <string name="command_touch">.*?(clic|clique)\\s(en|sur).*?</string>
+    <string name="command_touch">.*?(clic|clique|click)\\s(en|sur).*?</string>
     <string name="command_swipe">.*?(glisse|swipe)\\s(de).*?(à|vers|jusquà).*?</string>
     <string name="command_longclick">.*?(long\\s(clic|clique)|(clic|clique)\\slong).*?</string>
     <string name="command_write">écrit</string>

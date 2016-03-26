@@ -52,7 +52,7 @@ public class SpeechListener implements RecognitionListener {
             shouldBeListening = true;
             Log.d(TAG, "starting voice recognition");
         } else {
-            mSpeechRecognizer.stopListening();
+            mSpeechRecognizer.cancel();
             shouldBeListening = false;
             isRestarting=false;
             Log.d(TAG, "ending voice recognition");
@@ -79,7 +79,7 @@ public class SpeechListener implements RecognitionListener {
 
     @Override
     public void onEndOfSpeech() {
-        restartListen();
+       // restartListen();
     }
 
     @Override
@@ -148,7 +148,10 @@ public class SpeechListener implements RecognitionListener {
     public void restartListen(){
         if(shouldBeListening && !isRestarting) {
             this.mSpeechRecognizer.cancel();
-            this.mSpeechRecognizer.stopListening();
+
+            mSpeechRecognizer = SpeechRecognizer.createSpeechRecognizer(mContext);
+            mSpeechRecognizer.setRecognitionListener(this);
+            //this.mSpeechRecognizer.stopListening();
             setListeningSpeech(true);
         }
     }

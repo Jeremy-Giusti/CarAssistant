@@ -1,4 +1,4 @@
-package com.giusti.jeremy.androidcar.ScreenMapping;
+package com.giusti.jeremy.androidcar.ScreenOverlay;
 
 import android.content.Context;
 import android.graphics.Point;
@@ -12,7 +12,6 @@ import android.widget.RelativeLayout;
 import com.giusti.jeremy.androidcar.Commands.IMotionEventCmdListener;
 import com.giusti.jeremy.androidcar.Constants.ACPreference;
 import com.giusti.jeremy.androidcar.Constants.Constants;
-import com.giusti.jeremy.androidcar.Constants.ISettingChangeListener;
 import com.giusti.jeremy.androidcar.R;
 import com.giusti.jeremy.androidcar.Utils;
 
