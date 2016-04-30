@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 
 /**
  * Created by jgiusti on 16/10/2015.
+ * execute command by using adb
  */
 public class TerminalCmdExecutor {
 

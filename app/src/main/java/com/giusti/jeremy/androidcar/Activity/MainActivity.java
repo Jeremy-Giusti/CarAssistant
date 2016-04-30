@@ -2,8 +2,8 @@ package com.giusti.jeremy.androidcar.Activity;
 
 import android.content.Intent;
 import android.graphics.Point;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.Menu;
@@ -16,8 +16,8 @@ import android.widget.Toast;
 
 import com.giusti.jeremy.androidcar.Commands.CmdInterpretor;
 import com.giusti.jeremy.androidcar.Constants.ACPreference;
-import com.giusti.jeremy.androidcar.Service.ACService;
 import com.giusti.jeremy.androidcar.R;
+import com.giusti.jeremy.androidcar.Service.ACService;
 import com.giusti.jeremy.androidcar.SpeechRecognition.ISpeechResultListener;
 
 import java.util.ArrayList;
@@ -65,12 +65,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void openSettings() {
-        Intent intent =new Intent(this,SettingActivity.class);
+        Intent intent = new Intent(this, SettingActivity.class);
         startActivity(intent);
     }
 
     private void openSpeechActivity() {
-        Intent intent =new Intent(this,SpeechActivity.class);
+        Intent intent = new Intent(this, SpeechActivity.class);
         startActivity(intent);
     }
 
@@ -81,10 +81,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startACService() {
+        if (ACService.getInstance() == null) {
             startService(new Intent(this, ACService.class));
+            if (ACPreference.getAutoClose(this)) {
+                Toast.makeText(this, R.string.assistant_started, Toast.LENGTH_SHORT).show();
+                this.finish();
+            }
+        }
 
     }
-
 
 
     private void displayScreenResolution() {
@@ -95,13 +100,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onClickSendCmd(View v) {
-        if(ACService.getInstance()==null){
-            Toast.makeText(this,"Android car service not started yet",Toast.LENGTH_SHORT).show();
+        if (ACService.getInstance() == null) {
+            Toast.makeText(this, "Android car service not started yet", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        String cmd =cmdInput.getText().toString();
-        ArrayList<String> cmdlist =new ArrayList<String>();
+        String cmd = cmdInput.getText().toString();
+        ArrayList<String> cmdlist = new ArrayList<String>();
         cmdlist.add(cmd);
         ACService.getInstance().onInputCmd(cmdlist);
 
@@ -109,13 +114,13 @@ public class MainActivity extends AppCompatActivity {
 
     public void onClickTopRight(View v) {
         ArrayList<String> cmdShowListCmd = new ArrayList<String>();
-        cmdShowListCmd.add(getString(R.string.command_trigger)+" "+getString(R.string.command_show_cmd));
+        cmdShowListCmd.add(getString(R.string.command_trigger) + " " + getString(R.string.command_show_cmd));
         ((ISpeechResultListener) ACService.getInstance()).onSpeechResult(cmdShowListCmd);
         //Toast.makeText(this, "touched on top right", Toast.LENGTH_SHORT).show();
     }
 
     public void onClickTopLeft(View v) {
-       // Toast.makeText(this, "touched on top left", Toast.LENGTH_SHORT).show();
+        // Toast.makeText(this, "touched on top left", Toast.LENGTH_SHORT).show();
         ACService.getInstance().changelisteningMode();
     }
 
@@ -125,10 +130,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void onClickBottomLeft(View v) {
         Toast.makeText(this, "touched on bottom left", Toast.LENGTH_SHORT).show();
-        if(ACService.getInstance()!=null){
+        if (ACService.getInstance() != null) {
             stopService(new Intent(this, ACService.class));
 
-        }else{
+        } else {
             startService(new Intent(this, ACService.class));
         }
     }
@@ -144,15 +149,15 @@ public class MainActivity extends AppCompatActivity {
 
     private int getSoftbuttonsbarHeight() {
         // getRealMetrics is only available with API 17 and +
-            DisplayMetrics metrics = new DisplayMetrics();
-            getWindowManager().getDefaultDisplay().getMetrics(metrics);
-            int usableHeight = metrics.heightPixels;
-            getWindowManager().getDefaultDisplay().getRealMetrics(metrics);
-            int realHeight = metrics.heightPixels;
-            if (realHeight > usableHeight)
-                return realHeight - usableHeight;
-            else
-                return 0;
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        int usableHeight = metrics.heightPixels;
+        getWindowManager().getDefaultDisplay().getRealMetrics(metrics);
+        int realHeight = metrics.heightPixels;
+        if (realHeight > usableHeight)
+            return realHeight - usableHeight;
+        else
+            return 0;
 
     }
 }

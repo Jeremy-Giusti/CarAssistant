@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
 
     <ListView
+        android:id="@+id/commands_lv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:divider="#888888"
-        android:dividerHeight="0dp"
         android:layout_marginBottom="10dp"
-        android:id="@+id/commands_lv"/>
+        android:divider="#888888"
+        android:dividerHeight="0dp" />
 </RelativeLayout>

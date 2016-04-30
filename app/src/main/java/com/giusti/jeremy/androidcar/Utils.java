@@ -1,10 +1,10 @@
 package com.giusti.jeremy.androidcar;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Rect;
+import android.os.Vibrator;
 import android.util.DisplayMetrics;
-import android.view.Window;
 
 /**
  * Created by jgiusti on 19/10/2015.
@@ -17,6 +17,7 @@ public class Utils {
 
     /**
      * calculate
+     *
      * @param divised
      * @param diviser
      * @param maxDivResult
@@ -29,9 +30,9 @@ public class Utils {
             nearDiviser--;
         }
 
-        if(maxDivResult>0 && (divised/nearDiviser)>maxDivResult){
+        if (maxDivResult > 0 && (divised / nearDiviser) > maxDivResult) {
             nearDiviser = diviser;
-            while ((divised % nearDiviser) > (diviser / 4) || (divised/nearDiviser)>maxDivResult) {
+            while ((divised % nearDiviser) > (diviser / 4) || (divised / nearDiviser) > maxDivResult) {
                 nearDiviser++;
             }
         }
@@ -43,11 +44,11 @@ public class Utils {
     /**
      * This method converts dp unit to equivalent pixels, depending on device density.
      *
-     * @param dp A value in dp (density independent pixels) unit. Which we need to convert into pixels
+     * @param dp      A value in dp (density independent pixels) unit. Which we need to convert into pixels
      * @param context Context to get resources and device specific display metrics
      * @return A float value to represent px equivalent to dp depending on device density
      */
-    public static float convertDpToPixel(float dp, Context context){
+    public static float convertDpToPixel(float dp, Context context) {
         Resources resources = context.getResources();
         DisplayMetrics metrics = resources.getDisplayMetrics();
         float px = dp * (metrics.densityDpi / 160f);
@@ -57,14 +58,43 @@ public class Utils {
     /**
      * This method converts device specific pixels to density independent pixels.
      *
-     * @param px A value in px (pixels) unit. Which we need to convert into db
+     * @param px      A value in px (pixels) unit. Which we need to convert into db
      * @param context Context to get resources and device specific display metrics
      * @return A float value to represent dp equivalent to px value
      */
-    public static float convertPixelsToDp(float px, Context context){
+    public static float convertPixelsToDp(float px, Context context) {
         Resources resources = context.getResources();
         DisplayMetrics metrics = resources.getDisplayMetrics();
         float dp = px / (metrics.densityDpi / 160f);
         return dp;
+    }
+
+    public static void vibrate(Context context, int duration, int intensity) {
+        long[] pattern = {0,intensity,0,duration};
+        Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+        v.vibrate(pattern,1);
+    }
+
+    public static int getStatusBarHeight(Context context) {
+        int result = 0;
+        int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = context.getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
+    }
+
+    public static int getSoftbuttonsbarHeight(Activity activity) {
+        // getRealMetrics is only available with API 17 and +
+        DisplayMetrics metrics = new DisplayMetrics();
+        activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        int usableHeight = metrics.heightPixels;
+        activity.getWindowManager().getDefaultDisplay().getRealMetrics(metrics);
+        int realHeight = metrics.heightPixels;
+        if (realHeight > usableHeight)
+            return realHeight - usableHeight;
+        else
+            return 0;
+
     }
 }

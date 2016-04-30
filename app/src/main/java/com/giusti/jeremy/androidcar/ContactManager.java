@@ -11,6 +11,7 @@ import java.util.HashMap;
 
 /**
  * Created by jgiusti on 28/10/2015.
+ * allow action on contact list
  */
 public class ContactManager extends ContentObserver {
     private Context mContext;

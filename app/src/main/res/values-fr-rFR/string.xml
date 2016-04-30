@@ -23,7 +23,7 @@
     <string name="command_delete">supprime</string>
     <string name="command_home">.*?(retourne|retour)\\s(à|vers)\\s(l\'écran d\'|l\')(accueil).*?</string>
     <string name="command_back">.*?(precedent).*?</string>
-    <string name="command_volume">.*?(met)\\s(le)\\s(volume/son).*?(à).*?</string>
+    <string name="command_volume">.*?(met)\\s(le)\\s(volume|son).*?(à).*?</string>
     <string name="command_volume_up">.*?(monte|augmente)\\s(le)\\s(volume|son).*?</string>
     <string name="command_volume_down">.*?(baisse|diminue)\\s(le)\\s(volume|son).*?</string>
     <string name="command_quit">.*?(ferme|termine|quitte)\\s(l\'application).*?</string>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/cmd_button_layout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:clickable="false"
+    android:focusable="false"
+    android:focusableInTouchMode="false">
+
+    <ImageButton
+        android:id="@+id/cmd_button"
+        android:layout_width="@dimen/cmd_button_size"
+        android:layout_height="@dimen/cmd_button_size"
+        android:background="@drawable/fab_shape"
+        android:src="@drawable/ic_action_speech" />
+
+
+</RelativeLayout>

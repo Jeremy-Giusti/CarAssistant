@@ -9,11 +9,14 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.giusti.jeremy.androidcar.Activity.CommandsListActivity;
 import com.giusti.jeremy.androidcar.Activity.SettingActivity;
 import com.giusti.jeremy.androidcar.Constants.ACPreference;
+import com.giusti.jeremy.androidcar.R;
 import com.giusti.jeremy.androidcar.Service.ACService;
 
 import java.lang.reflect.Constructor;
@@ -21,6 +24,7 @@ import java.lang.reflect.Method;
 
 /**
  * Created by jgiusti on 20/10/2015.
+ * excecute command with the basic android api
  */
 public class ApiCmdExecutor {
 
@@ -84,13 +88,19 @@ public class ApiCmdExecutor {
         try {
             Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + number));
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+
+                Toast.makeText(context, R.string.call_forbiden, Toast.LENGTH_SHORT).show();
+                return false;
+            }
             context.startActivity(intent);
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
             return false;
         }
-    return true;
+        return true;
     }
+
 
     public boolean endCall() {
         try {

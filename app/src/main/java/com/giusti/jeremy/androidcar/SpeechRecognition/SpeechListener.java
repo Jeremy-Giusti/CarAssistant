@@ -3,7 +3,6 @@ package com.giusti.jeremy.androidcar.SpeechRecognition;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
@@ -14,13 +13,19 @@ import java.util.ArrayList;
 
 /**
  * Created by jgiusti on 21/10/2015.
+ * basic implementation of RecognitionListener
+ * work with a list of litener to notify when a voice recognition has been done
  */
 public class SpeechListener implements RecognitionListener {
 
     private static final String TAG = SpeechListener.class.getSimpleName();
+    public static final int INFINITE_TRY = -1;
+    public static final int TRY_EVEN_AFTER_SUCCESS = -2;
+    public static final int DEFAULT_RETRY_NUMBER = 3;
+
     private SpeechRecognizer mSpeechRecognizer;
-    private boolean shouldBeListening = false;
-    private boolean isRestarting =false;
+    private int restartNumber = 0;
+    private boolean isRestarting = false;
     private ArrayList<ISpeechResultListener> mListenerList = new ArrayList<>();
     private Context mContext;
 
@@ -37,7 +42,7 @@ public class SpeechListener implements RecognitionListener {
 
     }
 
-    public void setListeningSpeech(boolean listening) {
+    public void setListeningSpeech(boolean listening, int numberOfTry) {
         if (listening && !SpeechRecognizer.isRecognitionAvailable(mContext)) {
             Toast.makeText(mContext, "Speech Recognizer unavailable on device", Toast.LENGTH_SHORT).show();
             return;
@@ -48,20 +53,20 @@ public class SpeechListener implements RecognitionListener {
             //      intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,"voice.recognition.test");
             intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 5);
             mSpeechRecognizer.startListening(intent);
-            isRestarting =true;
-            shouldBeListening = true;
+            isRestarting = true;
+            restartNumber = numberOfTry;
             Log.d(TAG, "starting voice recognition");
         } else {
             mSpeechRecognizer.cancel();
-            shouldBeListening = false;
-            isRestarting=false;
+            restartNumber = numberOfTry;
+            isRestarting = false;
             Log.d(TAG, "ending voice recognition");
         }
     }
 
     @Override
     public void onReadyForSpeech(Bundle params) {
-        isRestarting =false;
+        isRestarting = false;
     }
 
     @Override
@@ -79,7 +84,7 @@ public class SpeechListener implements RecognitionListener {
 
     @Override
     public void onEndOfSpeech() {
-       // restartListen();
+        // restartListen();
     }
 
     @Override
@@ -119,8 +124,8 @@ public class SpeechListener implements RecognitionListener {
 //                break;
 //                    }
 
-        Toast.makeText(mContext,"error : " + error,Toast.LENGTH_SHORT).show();
-        if(error != 8 && error != 9){
+        Toast.makeText(mContext, "error : " + error, Toast.LENGTH_SHORT).show();
+        if (error != 8 && error != 9) {
             restartListen();
         }
     }
@@ -128,7 +133,7 @@ public class SpeechListener implements RecognitionListener {
     @Override
     public void onResults(Bundle results) {
         Log.d(TAG, "onResults " + results);
-        restartListen();
+        if (restartNumber == TRY_EVEN_AFTER_SUCCESS) restartListen();
         ArrayList<String> potentialCmdList = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
         notifityAllListener(potentialCmdList);
 
@@ -136,7 +141,7 @@ public class SpeechListener implements RecognitionListener {
 
     @Override
     public void onPartialResults(Bundle partialResults) {
-        Toast.makeText(mContext,"partial result",Toast.LENGTH_SHORT).show();
+        Toast.makeText(mContext, "partial result", Toast.LENGTH_SHORT).show();
         //restartListen();
     }
 
@@ -145,14 +150,17 @@ public class SpeechListener implements RecognitionListener {
 
     }
 
-    public void restartListen(){
-        if(shouldBeListening && !isRestarting) {
+    public void restartListen() {
+        if (restartNumber != 0 && !isRestarting) {
+            if (restartNumber > 0) {
+                restartNumber--;
+            }
             this.mSpeechRecognizer.cancel();
 
             mSpeechRecognizer = SpeechRecognizer.createSpeechRecognizer(mContext);
             mSpeechRecognizer.setRecognitionListener(this);
             //this.mSpeechRecognizer.stopListening();
-            setListeningSpeech(true);
+            setListeningSpeech(true, restartNumber);
         }
     }
 
@@ -162,7 +170,7 @@ public class SpeechListener implements RecognitionListener {
             listener.onSpeechResult(result);
         }
         //TODO provisoire
-        Toast.makeText(mContext,"result :" + result.toString(),Toast.LENGTH_LONG).show();
+        Toast.makeText(mContext, "result :" + result.toString(), Toast.LENGTH_LONG).show();
     }
 
     public void addListener(ISpeechResultListener listener) {
@@ -180,6 +188,6 @@ public class SpeechListener implements RecognitionListener {
     }
 
     public boolean isShouldBeListening() {
-        return shouldBeListening;
+        return restartNumber != 0;
     }
 }

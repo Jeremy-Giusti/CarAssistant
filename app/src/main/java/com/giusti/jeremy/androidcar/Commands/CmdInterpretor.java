@@ -8,10 +8,10 @@ import android.util.Log;
 import android.util.Pair;
 
 import com.giusti.jeremy.androidcar.Constants.ACPreference;
-import com.giusti.jeremy.androidcar.ContactManager;
-import com.giusti.jeremy.androidcar.ScreenOverlay.AlphaNumCoord;
 import com.giusti.jeremy.androidcar.Constants.Constants;
+import com.giusti.jeremy.androidcar.ContactManager;
 import com.giusti.jeremy.androidcar.R;
+import com.giusti.jeremy.androidcar.ScreenOverlay.AlphaNumCoord;
 import com.giusti.jeremy.androidcar.ScreenOverlay.CoordinateConverter;
 
 import org.apache.commons.lang3.StringUtils;
@@ -20,6 +20,7 @@ import java.util.ArrayList;
 
 /**
  * Created by jgiusti on 20/10/2015.
+ * allow to interprete a single aor a group of string and can {@link ApiCmdExecutor} depending on the command
  */
 public class CmdInterpretor {
 
@@ -64,6 +65,7 @@ public class CmdInterpretor {
     private String command_volume_up;
     private String command_volume_down;
     private String command_quit;
+    private boolean useTrigger = false;
 
 
     public CmdInterpretor(Context context, IMotionEventCmdListener... listeners) {
@@ -105,7 +107,7 @@ public class CmdInterpretor {
 
         InterpretationResult result = InterpretationResult.NOT_A_COMMAND;
 
-        if (StringUtils.containsIgnoreCase(cmd, command_trigger)) {
+        if (!useTrigger || StringUtils.containsIgnoreCase(cmd, command_trigger)) {
             result = InterpretationResult.UNINTERPRETED;
 
             if (!listening) {
@@ -119,7 +121,7 @@ public class CmdInterpretor {
                 if (cmd.toLowerCase().matches(command_stop_listening)) {
                     listening = false;
                     result = InterpretationResult.APPLIED;
-                } else if (cmd.toLowerCase().matches(command_show_cmd)){//StringUtils.containsIgnoreCase(cmd, command_show_cmd)) {
+                } else if (cmd.toLowerCase().matches(command_show_cmd)) {//StringUtils.containsIgnoreCase(cmd, command_show_cmd)) {
                     apiCmdExec.openCmdListActivity(cmdListStr.toArray(new String[cmdListStr.size()]));
                     result = InterpretationResult.APPLIED;
                 } else if (cmd.toLowerCase().matches(command_show_settings)) {
@@ -150,7 +152,7 @@ public class CmdInterpretor {
                     result = interpetTouchCmd(cmd);
                 } else if (StringUtils.containsIgnoreCase(cmd, command_write)) {
                     result = interpretWriteCmd(cmd);
-                } else if (StringUtils.containsIgnoreCase(cmd,command_delete)) {
+                } else if (StringUtils.containsIgnoreCase(cmd, command_delete)) {
                     result = interpretDelCmd(cmd);
                 } else if (cmd.toLowerCase().matches(command_home)) {
                     trmCmdExec.executeCommande("input keyevent 3", true);
@@ -315,8 +317,7 @@ public class CmdInterpretor {
             } else {
                 return InterpretationResult.EXECUTION_FAILED;
             }
-        } else
-        {
+        } else {
             return InterpretationResult.UNINTERPRETED;
         }
     }
@@ -448,6 +449,8 @@ public class CmdInterpretor {
      */
     private void loadAllCommands() {
 
+        useTrigger = ACPreference.getUseTrigger(context);
+
         command_trigger = ACPreference.getTrigger(context);
         cmdListStr.add("Trigger: " + command_trigger);
 
@@ -463,7 +466,7 @@ public class CmdInterpretor {
 
         command_call = context.getString(R.string.command_call);
         cmdListStr.add(command_call);
-        command_end_call=context.getString(R.string.command_end_call);
+        command_end_call = context.getString(R.string.command_end_call);
         cmdListStr.add(command_end_call);
         command_speaker = context.getString(R.string.command_speaker);
         cmdListStr.add(command_speaker);
@@ -499,6 +502,7 @@ public class CmdInterpretor {
 
     public void triggerChanged() {
         cmdListStr.remove(0);
+        useTrigger = ACPreference.getUseTrigger(context);
         command_trigger = ACPreference.getTrigger(context);
         cmdListStr.add(0, "Trigger: " + command_trigger);
     }
