@@ -59,6 +59,16 @@ public class ApiCmdExecutor {
                 0);
     }
 
+    public void setCallVolume(int volume) {
+        AudioManager am =
+                (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+
+        am.setStreamVolume(
+                AudioManager.STREAM_VOICE_CALL,
+                (int) ((am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)) * (volume / 10.0)),
+                0);
+    }
+
     public void setSpeaker(boolean on) {
         AudioManager am =
                 (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
@@ -120,6 +130,7 @@ public class ApiCmdExecutor {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
+                    setCallVolume(10);
                     setSpeaker(true);
                 }
             }, 1000);
