@@ -51,6 +51,7 @@ public class SettingActivity extends AppCompatActivity implements ActivityCompat
             Manifest.permission.MODIFY_AUDIO_SETTINGS,
             Manifest.permission.VIBRATE,
             Manifest.permission.READ_CONTACTS,
+            Manifest.permission.SEND_SMS,
             Manifest.permission.WRITE_CONTACTS
     };
 

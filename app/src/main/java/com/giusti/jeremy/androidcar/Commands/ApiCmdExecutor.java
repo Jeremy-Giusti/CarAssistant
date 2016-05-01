@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -20,6 +21,7 @@ import com.giusti.jeremy.androidcar.Constants.ACPreference;
 import com.giusti.jeremy.androidcar.R;
 import com.giusti.jeremy.androidcar.Service.ACService;
 import com.giusti.jeremy.androidcar.Utils.MediaPlayerManager;
+import com.giusti.jeremy.androidcar.Utils.MessageManager;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -198,6 +200,16 @@ public class ApiCmdExecutor {
             Log.e(TAG,
                     "FATAL ERROR: could not connect to telephony subsystem");
             Log.e(TAG, "Exception object: " + e);
+            return false;
+        }
+        return true;
+    }
+
+    public boolean sendTo(String number, String message) {
+        try{
+            MessageManager.getInstance().sendSms(number,message);
+        }catch (Exception e){
+            e.printStackTrace();
             return false;
         }
         return true;

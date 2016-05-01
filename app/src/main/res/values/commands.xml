@@ -14,6 +14,9 @@
     <string name="command_write">write</string>
     <string name="command_delete">delete</string>
 
+
+    <string name="command_send_to">.*?send to .*?</string>
+
     <string name="command_show_cmd">.*?show the command list.*?</string>
     <string name="command_show_settings">.*?show the application\'s settings.*?</string>
 

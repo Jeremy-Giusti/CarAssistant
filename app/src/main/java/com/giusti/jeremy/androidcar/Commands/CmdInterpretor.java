@@ -51,6 +51,8 @@ public class CmdInterpretor {
     private String command_call;
     private String command_end_call;
 
+    private String command_send;
+
     private String command_grid_display;
     private String command_grid_hide;
 
@@ -140,6 +142,8 @@ public class CmdInterpretor {
                     }
                 } else if (StringUtils.containsIgnoreCase(cmd, command_call)) {
                     result = interpreteCallCmd(cmd);
+                } else if (StringUtils.containsIgnoreCase(cmd, command_send)) {
+                    result = interpreteSendCmd(cmd);
                 } else if (cmd.toLowerCase().matches(command_speaker)) {
                     apiCmdExec.setSpeaker(true);
                     result = InterpretationResult.APPLIED;
@@ -197,6 +201,41 @@ public class CmdInterpretor {
             }
         }
         return result;
+    }
+
+    private InterpretationResult interpreteSendCmd(String cmd) {
+        String[] splitCommand = cmd.split(command_send);
+
+        boolean trigger = !ACPreference.getUseTrigger(context);
+        String number = "";
+        String message = "";
+        for (String str : splitCommand) {
+            if (StringUtils.containsIgnoreCase(str, command_trigger)) {
+                trigger = true;
+            } else if (trigger && !TextUtils.isEmpty(str)) {
+
+                //find contact
+                String contact = str.split(" ")[1];
+
+                if (mContactManager.contactExist(contact)) {
+                    number = mContactManager.getNumberFromName(contact);
+                    message = str.replaceFirst(contact, "");
+                } else {
+                    //TODO try something different to find the contact
+                    return InterpretationResult.UNINTERPRETED;
+                }
+
+            }
+        }
+        if (!TextUtils.isEmpty(number) && !TextUtils.isEmpty(message)) {
+            if (apiCmdExec.sendTo(number, message)) {
+                return InterpretationResult.APPLIED;
+            } else {
+                return InterpretationResult.EXECUTION_FAILED;
+            }
+        } else {
+            return InterpretationResult.UNINTERPRETED;
+        }
     }
 
 
@@ -492,6 +531,9 @@ public class CmdInterpretor {
         cmdListStr.add(command_end_call);
         command_speaker = context.getString(R.string.command_speaker);
         cmdListStr.add(command_speaker);
+
+        command_send = context.getString(R.string.command_send_to);
+        cmdListStr.add(command_send);
 
         command_grid_display = context.getString(R.string.command_grid_display);
         cmdListStr.add(command_grid_display);
