@@ -1,4 +1,4 @@
-package com.giusti.jeremy.androidcar;
+package com.giusti.jeremy.androidcar.Utils;
 
 import android.content.ContentResolver;
 import android.content.Context;

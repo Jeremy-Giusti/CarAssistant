@@ -1,4 +1,4 @@
-package com.giusti.jeremy.androidcar;
+package com.giusti.jeremy.androidcar.Utils;
 
 import android.app.Activity;
 import android.content.Context;

@@ -9,10 +9,10 @@ import android.util.Pair;
 
 import com.giusti.jeremy.androidcar.Constants.ACPreference;
 import com.giusti.jeremy.androidcar.Constants.Constants;
-import com.giusti.jeremy.androidcar.ContactManager;
 import com.giusti.jeremy.androidcar.R;
 import com.giusti.jeremy.androidcar.ScreenOverlay.AlphaNumCoord;
 import com.giusti.jeremy.androidcar.ScreenOverlay.CoordinateConverter;
+import com.giusti.jeremy.androidcar.Utils.ContactManager;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -63,6 +63,11 @@ public class CmdInterpretor {
     private String command_back;
     private String command_volume;
     private String command_volume_up;
+    private String command_music_play;
+    private String command_music_pause;
+    private String command_music_stop;
+    private String command_music_next;
+    private String command_music_previous;
     private String command_volume_down;
     private String command_quit;
     private boolean useTrigger = false;
@@ -137,6 +142,21 @@ public class CmdInterpretor {
                     result = interpreteCallCmd(cmd);
                 } else if (cmd.toLowerCase().matches(command_speaker)) {
                     apiCmdExec.setSpeaker(true);
+                    result = InterpretationResult.APPLIED;
+                } else if (cmd.toLowerCase().matches(command_music_play)) {
+                    apiCmdExec.changeMusicState(ApiCmdExecutor.MusicState.PLAY);
+                    result = InterpretationResult.APPLIED;
+                } else if (cmd.toLowerCase().matches(command_music_pause)) {
+                    apiCmdExec.changeMusicState(ApiCmdExecutor.MusicState.PAUSE);
+                    result = InterpretationResult.APPLIED;
+                } else if (cmd.toLowerCase().matches(command_music_stop)) {
+                    apiCmdExec.changeMusicState(ApiCmdExecutor.MusicState.STOP);
+                    result = InterpretationResult.APPLIED;
+                } else if (cmd.toLowerCase().matches(command_music_next)) {
+                    apiCmdExec.changeMusicState(ApiCmdExecutor.MusicState.NEXT);
+                    result = InterpretationResult.APPLIED;
+                } else if (cmd.toLowerCase().matches(command_music_previous)) {
+                    apiCmdExec.changeMusicState(ApiCmdExecutor.MusicState.PREVIOUS);
                     result = InterpretationResult.APPLIED;
                 } else if (cmd.toLowerCase().matches(command_grid_display)) {
                     apiCmdExec.showGridOnOverlay(true);
@@ -232,7 +252,7 @@ public class CmdInterpretor {
 
     private InterpretationResult interpretWriteCmd(String writeCmd) {
         String[] splitCommand = writeCmd.split(command_write);
-        boolean trigger = false;
+        boolean trigger = !ACPreference.getUseTrigger(context);
         String textToWrite = "";
         for (String str : splitCommand) {
             if (StringUtils.containsIgnoreCase(str, command_trigger)) {
@@ -253,7 +273,7 @@ public class CmdInterpretor {
 
     private InterpretationResult interpretDelCmd(String cmd) {
         String[] splitCommand = cmd.split(command_delete);
-        boolean trigger = false;
+        boolean trigger = !ACPreference.getUseTrigger(context);
         int nbDel = -1;
         for (String str : splitCommand) {
             if (StringUtils.containsIgnoreCase(str, command_trigger)) {
@@ -285,13 +305,14 @@ public class CmdInterpretor {
      */
     private InterpretationResult interpreteCallCmd(String callCmd) {
         String[] splitCommand = callCmd.split(command_call);
-        boolean trigger = false;
+        boolean trigger = !ACPreference.getUseTrigger(context);
         String number = "";
         for (String str : splitCommand) {
             if (StringUtils.containsIgnoreCase(str, command_trigger)) {
                 trigger = true;
             } else if (trigger) {
                 if (str.matches(".*\\d+.*")) {
+                    //subject is a number
                     String[] PotentialSubjectList = str.split("\\s+");
                     for (String subjectPotential : PotentialSubjectList) {
                         if (StringUtils.isNumeric(subjectPotential)) {
@@ -301,6 +322,7 @@ public class CmdInterpretor {
                         }
                     }
                 } else {
+                    //subject is a name
                     String[] PotentialSubjectList = str.split("\\s+");
                     for (String subjectPotential : PotentialSubjectList) {
                         if (mContactManager.contactExist(subjectPotential)) {
@@ -324,7 +346,7 @@ public class CmdInterpretor {
 
     private InterpretationResult interpretVolumeCmd(String cmd) {
         String[] splitCommand = cmd.split(command_volume);
-        boolean trigger = false;
+        boolean trigger = !ACPreference.getUseTrigger(context);
         int volumeLvl = -1;
         for (String str : splitCommand) {
             if (StringUtils.containsIgnoreCase(str, command_trigger)) {
@@ -350,7 +372,7 @@ public class CmdInterpretor {
     @Nullable
     private Point getCoordPoint(String cmdStr) {
         String[] splitCommand = cmdStr.split("\\s+");
-        boolean trigger = false;
+        boolean trigger = !ACPreference.getUseTrigger(context);
         Point touchCoord = null;
         for (String word : splitCommand) {
             if (StringUtils.containsIgnoreCase(word, command_trigger)) {
@@ -383,7 +405,7 @@ public class CmdInterpretor {
     @Nullable
     private Pair<Point, Point> getCoordPointPair(String cmdStr) {
         String[] splitCommand = cmdStr.split("\\s+");
-        boolean trigger = false;
+        boolean trigger = !ACPreference.getUseTrigger(context);
         Point touchCoord1 = null;
         Point touchCoord2 = null;
 
@@ -496,6 +518,18 @@ public class CmdInterpretor {
         cmdListStr.add(command_volume_up);
         command_volume_down = context.getString(R.string.command_volume_down);
         cmdListStr.add(command_volume_down);
+
+        command_music_play = context.getString(R.string.command_play_music);
+        cmdListStr.add(command_music_play);
+        command_music_pause = context.getString(R.string.command_pause_music);
+        cmdListStr.add(command_music_pause);
+        command_music_stop = context.getString(R.string.command_stop_music);
+        cmdListStr.add(command_music_stop);
+        command_music_next = context.getString(R.string.command_next_music);
+        cmdListStr.add(command_music_next);
+        command_music_previous = context.getString(R.string.command_previous_music);
+        cmdListStr.add(command_music_previous);
+
         command_quit = context.getString(R.string.command_quit);
         cmdListStr.add(command_quit);
     }

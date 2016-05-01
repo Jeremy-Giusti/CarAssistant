@@ -27,7 +27,7 @@ import com.giusti.jeremy.androidcar.Constants.ACPreference;
 import com.giusti.jeremy.androidcar.Constants.Constants;
 import com.giusti.jeremy.androidcar.R;
 import com.giusti.jeremy.androidcar.Service.ACService;
-import com.giusti.jeremy.androidcar.Utils;
+import com.giusti.jeremy.androidcar.Utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -70,11 +70,13 @@ public class SettingActivity extends AppCompatActivity implements ActivityCompat
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!ACPreference.getPermissionGranted(this)) {
                 askForStandartPermissions();
+                return;
             }
         } else {
             ACPreference.setPermissionGranted(this, true);
-            startACService();
         }
+        startACService();
+
     }
 
     @Override

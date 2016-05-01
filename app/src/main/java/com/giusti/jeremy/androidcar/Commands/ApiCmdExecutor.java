@@ -8,6 +8,7 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
@@ -18,6 +19,7 @@ import com.giusti.jeremy.androidcar.Activity.SettingActivity;
 import com.giusti.jeremy.androidcar.Constants.ACPreference;
 import com.giusti.jeremy.androidcar.R;
 import com.giusti.jeremy.androidcar.Service.ACService;
+import com.giusti.jeremy.androidcar.Utils.MediaPlayerManager;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -79,6 +81,26 @@ public class ApiCmdExecutor {
         context.startActivity(intent);
     }
 
+    public void changeMusicState(MusicState requestedState) {
+        switch (requestedState) {
+            case PLAY:
+                MediaPlayerManager.playMusic(context);
+                break;
+            case PAUSE:
+                MediaPlayerManager.pauseMusic(context);
+                break;
+            case STOP:
+                MediaPlayerManager.stopMusic(context);
+                break;
+            case NEXT:
+                MediaPlayerManager.nextMusic(context);
+                break;
+            case PREVIOUS:
+                MediaPlayerManager.previousMusic(context);
+                break;
+        }
+    }
+
     public void showGridOnOverlay(boolean show) {
         ACPreference.setShowGrid(context, show);
     }
@@ -94,6 +116,13 @@ public class ApiCmdExecutor {
                 return false;
             }
             context.startActivity(intent);
+
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    setSpeaker(true);
+                }
+            }, 1000);
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
             return false;
@@ -161,6 +190,14 @@ public class ApiCmdExecutor {
             return false;
         }
         return true;
+    }
+
+    public enum MusicState {
+        PLAY,
+        PAUSE,
+        STOP,
+        NEXT,
+        PREVIOUS
     }
 
 }

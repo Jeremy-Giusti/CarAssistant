@@ -133,7 +133,7 @@ public class SpeechListener implements RecognitionListener {
     @Override
     public void onResults(Bundle results) {
         Log.d(TAG, "onResults " + results);
-        if (restartNumber == TRY_EVEN_AFTER_SUCCESS) restartListen();
+        restartNumber = 0;
         ArrayList<String> potentialCmdList = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
         notifityAllListener(potentialCmdList);
 

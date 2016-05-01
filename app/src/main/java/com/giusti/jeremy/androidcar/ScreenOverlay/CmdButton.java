@@ -13,7 +13,7 @@ import android.widget.RelativeLayout;
 
 import com.giusti.jeremy.androidcar.R;
 import com.giusti.jeremy.androidcar.Service.IFloatingButtonClickListener;
-import com.giusti.jeremy.androidcar.Utils;
+import com.giusti.jeremy.androidcar.Utils.Utils;
 
 /**
  * Created by jérémy on 28/04/2016.

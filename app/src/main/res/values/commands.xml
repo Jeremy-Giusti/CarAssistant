@@ -39,5 +39,11 @@
     <string name="command_enable_gps">.*? enable gps .*?</string>
     <string name="command_disable_gps">.*? enable gps .*?</string>
 
+    <string name="command_play_music">.*? play music .*?</string>
+    <string name="command_pause_music">.*? pause music .*?</string>
+    <string name="command_stop_music">.*? stop music .*?</string>
+    <string name="command_next_music">.*? next music .*?</string>
+    <string name="command_previous_music">.*? previous music .*?</string>
+
     <string name="command_quit">.*? end the application .*?</string>
 </resources>

@@ -16,7 +16,7 @@ import android.widget.TextView;
 import com.giusti.jeremy.androidcar.Constants.ACPreference;
 import com.giusti.jeremy.androidcar.Constants.Constants;
 import com.giusti.jeremy.androidcar.R;
-import com.giusti.jeremy.androidcar.Utils;
+import com.giusti.jeremy.androidcar.Utils.Utils;
 
 
 import java.util.ArrayList;
