@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">AndroidCar</string>
     <string name="notif_title">AndroidCar</string>
-    <string name="notif_text">listening for command</string>
+    <string name="notif_text">Waiting for command</string>
     <string name="setting_trigger">Trigger name :</string>
     <string name="setting_show_grid">Show grid overlay</string>
     <string name="setting_auto_close_app">Auto close app on start</string>
@@ -14,6 +14,8 @@
     <string name="call_allowed">Allow call</string>
     <string name="overlay_forbiden">Not allowed to display overlay</string>
     <string name="all_permission_needed">The application need all the permissions to work.\n Restart if you want to allow all permissions.</string>
+    <string name="open_music_player">open music player</string>
+    <string name="music_player_off">Music player isn\'t started</string>
 
 
 </resources>

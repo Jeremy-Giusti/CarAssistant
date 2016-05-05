@@ -18,10 +18,12 @@ import android.view.Gravity;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import com.giusti.jeremy.androidcar.Commands.ApiCmdExecutor;
+import com.giusti.jeremy.androidcar.Activity.SettingActivity;
+import com.giusti.jeremy.androidcar.Commands.AppCmdExecutor;
 import com.giusti.jeremy.androidcar.Commands.CmdInterpretor;
 import com.giusti.jeremy.androidcar.Constants.ACPreference;
 import com.giusti.jeremy.androidcar.Constants.ISettingChangeListener;
+import com.giusti.jeremy.androidcar.MusicPlayer.IAudioPlayer;
 import com.giusti.jeremy.androidcar.R;
 import com.giusti.jeremy.androidcar.ScreenOverlay.CmdButton;
 import com.giusti.jeremy.androidcar.ScreenOverlay.ScreenMapper;
@@ -46,6 +48,9 @@ public class ACService extends Service implements ISpeechResultListener, ISettin
     private CmdInterpretor cmdInterpretor;
     private SpeechListener speechListener;
 
+    private IAudioPlayer mAudioPlayer = null;
+    private boolean mAudioPlayerPaused = false;
+
 
     @Nullable
     @Override
@@ -63,7 +68,7 @@ public class ACService extends Service implements ISpeechResultListener, ISettin
         super.onCreate();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
             Toast.makeText(this, R.string.overlay_forbiden, Toast.LENGTH_SHORT).show();
-            new ApiCmdExecutor(this).openSettingActivity();
+            new AppCmdExecutor(this).openSettingActivity();
             this.stopSelf();
             return;
         }
@@ -74,8 +79,6 @@ public class ACService extends Service implements ISpeechResultListener, ISettin
         cmdInterpretor = new CmdInterpretor(this, mScreenMapper);
         speechListener = new SpeechListener(this, this);
         ACPreference.addListener(this);
-        //TODO prov pendant l'utilisation de l'activity test
-        //speechListener.setListeningSpeech(true);
         instance = this;
     }
 
@@ -89,14 +92,19 @@ public class ACService extends Service implements ISpeechResultListener, ISettin
     }
 
     /**
-     * show persistant notif in order to make the service unkillable
+     * show persistant notif wich open setting if clicked
      */
     private void displayNotification() {
 
-        Intent notificationIntent = new Intent(this, ACService.class);
-        PendingIntent contentIntent = PendingIntent.getActivity(this,
-                CANCEL_SERVICE, notificationIntent,
-                PendingIntent.FLAG_CANCEL_CURRENT);
+        Intent notificationIntent = new Intent(this, SettingActivity.class);
+
+
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+                | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
+                notificationIntent, 0);
+
 
         Resources res = this.getResources();
         Notification.Builder builder = new Notification.Builder(this);
@@ -107,6 +115,7 @@ public class ACService extends Service implements ISpeechResultListener, ISettin
                 .setAutoCancel(true)
                 .setContentTitle(res.getString(R.string.notif_title))
                 .setContentText(res.getString(R.string.notif_text));
+
         Notification notif = builder.build();
 
         startForeground(1337, notif);
@@ -166,6 +175,22 @@ public class ACService extends Service implements ISpeechResultListener, ISettin
     @Override
     public void onSpeechResult(ArrayList<String> speechResult) {
         cmdInterpretor.managePotentialCmdList(speechResult);
+    }
+
+    @Override
+    public void onStartListening() {
+        if (this.mAudioPlayer != null) {
+            mAudioPlayer.pause();
+            mAudioPlayerPaused = true;
+        }
+    }
+
+    @Override
+    public void onStopListening() {
+        if (this.mAudioPlayer != null && mAudioPlayerPaused) {
+            mAudioPlayer.start();
+            mAudioPlayerPaused = false;
+        }
     }
 
     /**
@@ -239,5 +264,17 @@ public class ACService extends Service implements ISpeechResultListener, ISettin
     @Override
     public void onSecondaryClick() {
         stopService(new Intent(this, ACService.class));
+    }
+
+    public void audioPlayerLaunched(IAudioPlayer audioPlayer) {
+        this.mAudioPlayer = audioPlayer;
+    }
+
+    public void audioPlayerDestroyed() {
+        this.mAudioPlayer = null;
+    }
+
+    public IAudioPlayer getAudioPlayer() {
+        return mAudioPlayer;
     }
 }

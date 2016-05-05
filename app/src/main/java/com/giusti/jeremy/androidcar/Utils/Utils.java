@@ -6,6 +6,8 @@ import android.content.res.Resources;
 import android.os.Vibrator;
 import android.util.DisplayMetrics;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * Created by jgiusti on 19/10/2015.
  */
@@ -70,9 +72,9 @@ public class Utils {
     }
 
     public static void vibrate(Context context, int duration, int intensity) {
-        long[] pattern = {0,intensity,0,duration};
+        long[] pattern = {0, intensity, 0, duration};
         Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-        v.vibrate(pattern,1);
+        v.vibrate(pattern, 1);
     }
 
     public static int getStatusBarHeight(Context context) {
@@ -96,5 +98,13 @@ public class Utils {
         else
             return 0;
 
+    }
+
+    public static String getDisplayableTime(long millisec) {
+        return String.format("%02d:%02d",
+                TimeUnit.MILLISECONDS.toMinutes(millisec),
+                TimeUnit.MILLISECONDS.toSeconds(millisec) -
+                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millisec))
+        );
     }
 }

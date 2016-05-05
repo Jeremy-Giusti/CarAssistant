@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/am_music_list_rv"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"></android.support.v7.widget.RecyclerView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/light_grey"
+        android:orientation="vertical"
+        android:padding="@dimen/small_spacing">
+
+        <TextView
+            android:id="@+id/am_music_name_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:singleLine="true"
+            android:text="music name"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/title_size" />
+
+        <SeekBar
+            android:id="@+id/am_music_duration_sb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            android:thumbTint="@color/colorPrimary" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+
+            <ImageButton
+                android:id="@+id/am_random_bt"
+                android:layout_width="@dimen/small_button_size"
+                android:layout_height="@dimen/small_button_size"
+                android:onClick="clickRandom"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_random_selector" />
+
+            <ImageButton
+                android:id="@+id/am_repeat_bt"
+                android:layout_width="@dimen/small_button_size"
+                android:layout_height="@dimen/small_button_size"
+                android:onClick="clickRepeat"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_repeat_selector" />
+
+            <TextView
+                android:id="@+id/am_duration_tv"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="00:00" />
+
+            <ImageButton
+                android:id="@+id/am_previous_bt"
+                android:layout_width="@dimen/small_button_size"
+                android:layout_height="@dimen/small_button_size"
+                android:onClick="clickPrevious"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_previous" />
+
+            <ImageButton
+                android:id="@+id/am_play_pause_bt"
+                android:layout_width="@dimen/small_button_size"
+                android:layout_height="@dimen/small_button_size"
+                android:onClick="clickPlayPause"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_play_pause_selector" />
+
+            <ImageButton
+                android:id="@+id/am_next_bt"
+                android:layout_width="@dimen/small_button_size"
+                android:layout_height="@dimen/small_button_size"
+                android:onClick="clickNext"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_next" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

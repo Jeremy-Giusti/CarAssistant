@@ -7,4 +7,8 @@ import java.util.ArrayList;
  */
 public interface ISpeechResultListener {
     public void onSpeechResult(ArrayList<String> speechResult);
+
+    public void onStartListening();
+
+    public void onStopListening();
 }

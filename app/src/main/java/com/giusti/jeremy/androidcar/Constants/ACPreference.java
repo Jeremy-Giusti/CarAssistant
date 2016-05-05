@@ -39,6 +39,11 @@ public class ACPreference {
     private static final String USE_TRIGGER = "useTrigger";
     public static final int USE_TRIGGER_ID = 9;
 
+    private static final String AUDIO_PLAYER_RANDOM = "audioplayerrandom";
+    public static final int AUDIO_PLAYER_RANDOM_ID = 701;
+    private static final String AUDIO_PLAYER_REPEAT = "audioplayerrepeat";
+    public static final int AUDIO_PLAYER_REPEAT_ID = 702;
+
 
     private static final ArrayList<ISettingChangeListener> listenerList = new ArrayList<>();
 
@@ -164,6 +169,28 @@ public class ACPreference {
     public static boolean getUseTrigger(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(preferenceKey, Context.MODE_PRIVATE);
         return prefs.getBoolean(USE_TRIGGER, false);
+    }
+
+    public static void setAudioPlayerRandom(Context context, boolean random) {
+        SharedPreferences prefs = context.getSharedPreferences(preferenceKey, Context.MODE_PRIVATE);
+        prefs.edit().putBoolean(AUDIO_PLAYER_RANDOM, random).apply();
+        notifyListeners(AUDIO_PLAYER_RANDOM_ID);
+    }
+
+    public static boolean getAudioPlayerRandom(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(preferenceKey, Context.MODE_PRIVATE);
+        return prefs.getBoolean(AUDIO_PLAYER_RANDOM, false);
+    }
+
+    public static void setAudioPlayerRepeat(Context context, boolean repeat) {
+        SharedPreferences prefs = context.getSharedPreferences(preferenceKey, Context.MODE_PRIVATE);
+        prefs.edit().putBoolean(AUDIO_PLAYER_REPEAT, repeat).apply();
+        notifyListeners(AUDIO_PLAYER_REPEAT_ID);
+    }
+
+    public static boolean getAudioPlayerRepeat(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(preferenceKey, Context.MODE_PRIVATE);
+        return prefs.getBoolean(AUDIO_PLAYER_REPEAT, false);
     }
 
 

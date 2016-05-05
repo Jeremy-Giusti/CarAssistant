@@ -28,8 +28,11 @@ public class CmdInterpretor {
     private static final String TAG = CmdInterpretor.class.getSimpleName();
 
     private Context context;
+
     private TerminalCmdExecutor trmCmdExec;
     private ApiCmdExecutor apiCmdExec;
+    private AppCmdExecutor appCmdExec;
+
     private CoordinateConverter converter;
     private ContactManager mContactManager;
 
@@ -86,6 +89,8 @@ public class CmdInterpretor {
 
         trmCmdExec = new TerminalCmdExecutor();
         apiCmdExec = new ApiCmdExecutor(context);
+        appCmdExec = new AppCmdExecutor(context);
+
         converter = new CoordinateConverter(context);
         mContactManager = new ContactManager(context);
 
@@ -128,11 +133,11 @@ public class CmdInterpretor {
                 if (cmd.toLowerCase().matches(command_stop_listening)) {
                     listening = false;
                     result = InterpretationResult.APPLIED;
-                } else if (cmd.toLowerCase().matches(command_show_cmd)) {//StringUtils.containsIgnoreCase(cmd, command_show_cmd)) {
-                    apiCmdExec.openCmdListActivity(cmdListStr.toArray(new String[cmdListStr.size()]));
+                } else if (cmd.toLowerCase().matches(command_show_cmd)) {
+                    appCmdExec.openCmdListActivity(cmdListStr.toArray(new String[cmdListStr.size()]));
                     result = InterpretationResult.APPLIED;
                 } else if (cmd.toLowerCase().matches(command_show_settings)) {
-                    apiCmdExec.openSettingActivity();
+                    appCmdExec.openSettingActivity();
                     result = InterpretationResult.APPLIED;
                 } else if (cmd.toLowerCase().matches(command_end_call)) {
                     if (apiCmdExec.endCall()) {
@@ -148,19 +153,19 @@ public class CmdInterpretor {
                     apiCmdExec.setSpeaker(true);
                     result = InterpretationResult.APPLIED;
                 } else if (cmd.toLowerCase().matches(command_music_play)) {
-                    apiCmdExec.changeMusicState(ApiCmdExecutor.MusicState.PLAY);
+                    appCmdExec.changeMusicState(AppCmdExecutor.MusicState.PLAY);
                     result = InterpretationResult.APPLIED;
                 } else if (cmd.toLowerCase().matches(command_music_pause)) {
-                    apiCmdExec.changeMusicState(ApiCmdExecutor.MusicState.PAUSE);
+                    appCmdExec.changeMusicState(AppCmdExecutor.MusicState.PAUSE);
                     result = InterpretationResult.APPLIED;
                 } else if (cmd.toLowerCase().matches(command_music_stop)) {
-                    apiCmdExec.changeMusicState(ApiCmdExecutor.MusicState.STOP);
+                    appCmdExec.changeMusicState(AppCmdExecutor.MusicState.STOP);
                     result = InterpretationResult.APPLIED;
                 } else if (cmd.toLowerCase().matches(command_music_next)) {
-                    apiCmdExec.changeMusicState(ApiCmdExecutor.MusicState.NEXT);
+                    appCmdExec.changeMusicState(AppCmdExecutor.MusicState.NEXT);
                     result = InterpretationResult.APPLIED;
                 } else if (cmd.toLowerCase().matches(command_music_previous)) {
-                    apiCmdExec.changeMusicState(ApiCmdExecutor.MusicState.PREVIOUS);
+                    appCmdExec.changeMusicState(AppCmdExecutor.MusicState.PREVIOUS);
                     result = InterpretationResult.APPLIED;
                 } else if (cmd.toLowerCase().matches(command_grid_display)) {
                     apiCmdExec.showGridOnOverlay(true);

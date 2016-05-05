@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
-import android.telephony.SmsManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -20,7 +19,6 @@ import com.giusti.jeremy.androidcar.Activity.SettingActivity;
 import com.giusti.jeremy.androidcar.Constants.ACPreference;
 import com.giusti.jeremy.androidcar.R;
 import com.giusti.jeremy.androidcar.Service.ACService;
-import com.giusti.jeremy.androidcar.Utils.MediaPlayerManager;
 import com.giusti.jeremy.androidcar.Utils.MessageManager;
 
 import java.lang.reflect.Constructor;
@@ -29,6 +27,7 @@ import java.lang.reflect.Method;
 /**
  * Created by jgiusti on 20/10/2015.
  * excecute command with the basic android api
+ * <br> see also {@link TerminalCmdExecutor} and {@link AppCmdExecutor}
  */
 public class ApiCmdExecutor {
 
@@ -78,40 +77,9 @@ public class ApiCmdExecutor {
         am.setSpeakerphoneOn(on);
     }
 
-    public void openCmdListActivity(String[] strings) {
-        Intent intent = new Intent(context, CommandsListActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        Bundle b = new Bundle();
-        b.putStringArray(CommandsListActivity.COMMAND_LIST_STR, strings);
-        intent.putExtras(b);
-        context.startActivity(intent);
-    }
 
-    public void openSettingActivity() {
-        Intent intent = new Intent(context, SettingActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(intent);
-    }
 
-    public void changeMusicState(MusicState requestedState) {
-        switch (requestedState) {
-            case PLAY:
-                MediaPlayerManager.playMusic(context);
-                break;
-            case PAUSE:
-                MediaPlayerManager.pauseMusic(context);
-                break;
-            case STOP:
-                MediaPlayerManager.stopMusic(context);
-                break;
-            case NEXT:
-                MediaPlayerManager.nextMusic(context);
-                break;
-            case PREVIOUS:
-                MediaPlayerManager.previousMusic(context);
-                break;
-        }
-    }
+
 
     public void showGridOnOverlay(boolean show) {
         ACPreference.setShowGrid(context, show);
@@ -215,12 +183,6 @@ public class ApiCmdExecutor {
         return true;
     }
 
-    public enum MusicState {
-        PLAY,
-        PAUSE,
-        STOP,
-        NEXT,
-        PREVIOUS
-    }
+
 
 }

@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 /**
  * Created by jgiusti on 16/10/2015.
  * execute command by using adb
+ * <br> see also {@link ApiCmdExecutor} and {@link AppCmdExecutor}
  */
 public class TerminalCmdExecutor {
 

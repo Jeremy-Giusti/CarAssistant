@@ -21,7 +21,7 @@ public class SpeechListener implements RecognitionListener {
     private static final String TAG = SpeechListener.class.getSimpleName();
     public static final int INFINITE_TRY = -1;
     public static final int TRY_EVEN_AFTER_SUCCESS = -2;
-    public static final int DEFAULT_RETRY_NUMBER = 3;
+    public static final int DEFAULT_RETRY_NUMBER = 2;
 
     private SpeechRecognizer mSpeechRecognizer;
     private int restartNumber = 0;
@@ -48,6 +48,7 @@ public class SpeechListener implements RecognitionListener {
             return;
         }
         if (listening) {
+            notifityStartAllListener();
             Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
             intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
             //      intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,"voice.recognition.test");
@@ -60,6 +61,7 @@ public class SpeechListener implements RecognitionListener {
             mSpeechRecognizer.cancel();
             restartNumber = numberOfTry;
             isRestarting = false;
+            notifityStopAllListener();
             Log.d(TAG, "ending voice recognition");
         }
     }
@@ -135,6 +137,7 @@ public class SpeechListener implements RecognitionListener {
         Log.d(TAG, "onResults " + results);
         restartNumber = 0;
         ArrayList<String> potentialCmdList = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+        notifityStopAllListener();
         notifityAllListener(potentialCmdList);
 
     }
@@ -152,7 +155,9 @@ public class SpeechListener implements RecognitionListener {
 
     public void restartListen() {
         if (restartNumber != 0 && !isRestarting) {
+            //etheir we restart all the time (restartNumber<0) or their is still some "try"
             if (restartNumber > 0) {
+                //"try" -1
                 restartNumber--;
             }
             this.mSpeechRecognizer.cancel();
@@ -161,6 +166,8 @@ public class SpeechListener implements RecognitionListener {
             mSpeechRecognizer.setRecognitionListener(this);
             //this.mSpeechRecognizer.stopListening();
             setListeningSpeech(true, restartNumber);
+        } else if (restartNumber == 0) {
+            notifityStopAllListener();
         }
     }
 
@@ -171,6 +178,18 @@ public class SpeechListener implements RecognitionListener {
         }
         //TODO provisoire
         Toast.makeText(mContext, "result :" + result.toString(), Toast.LENGTH_LONG).show();
+    }
+
+    private void notifityStartAllListener() {
+        for (ISpeechResultListener listener : this.mListenerList) {
+            listener.onStartListening();
+        }
+    }
+
+    private void notifityStopAllListener() {
+        for (ISpeechResultListener listener : this.mListenerList) {
+            listener.onStopListening();
+        }
     }
 
     public void addListener(ISpeechResultListener listener) {

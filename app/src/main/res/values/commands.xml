@@ -2,8 +2,7 @@
 <resources>
 
     <!--TODO intent divers
-        gps, music, sms, appel+hp, film,  enregistre audio,
-        -> PASSER AU REGEX
+        gps, music, film,  enregistre audio,
     -->
 
 
@@ -13,6 +12,7 @@
     <string name="command_call">call</string>
     <string name="command_write">write</string>
     <string name="command_delete">delete</string>
+    <string name="command_play">play</string>
 
 
     <string name="command_send_to">.*?send to .*?</string>

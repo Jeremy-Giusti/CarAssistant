@@ -52,7 +52,9 @@ public class SettingActivity extends AppCompatActivity implements ActivityCompat
             Manifest.permission.VIBRATE,
             Manifest.permission.READ_CONTACTS,
             Manifest.permission.SEND_SMS,
-            Manifest.permission.WRITE_CONTACTS
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_CONTACTS,
+            Manifest.permission.WAKE_LOCK
     };
 
     @Override
@@ -266,4 +268,8 @@ public class SettingActivity extends AppCompatActivity implements ActivityCompat
 
     }
 
+    public void clickOpenMusicPlayer(View view) {
+        Intent openMusicActivity = new Intent(this, MusicPlayerActivity.class);
+        startActivity(openMusicActivity);
+    }
 }
