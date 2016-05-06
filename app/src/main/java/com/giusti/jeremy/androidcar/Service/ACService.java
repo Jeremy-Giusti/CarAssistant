@@ -179,7 +179,7 @@ public class ACService extends Service implements ISpeechResultListener, ISettin
 
     @Override
     public void onStartListening() {
-        if (this.mAudioPlayer != null) {
+        if (this.mAudioPlayer != null && mAudioPlayer.isPlaying()) {
             mAudioPlayer.pause();
             mAudioPlayerPaused = true;
         }

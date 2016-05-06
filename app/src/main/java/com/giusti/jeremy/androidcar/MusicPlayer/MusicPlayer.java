@@ -13,7 +13,7 @@ public class MusicPlayer {
     private IMusicPlayBackListener listener;
     private MediaPlayer mediaPLayer;
     private Handler mediaPostionUpdaterHandler = new Handler();
-    private boolean playing = false;
+    private boolean started = false;
 
     public MusicPlayer(IMusicPlayBackListener listener) {
         this.listener = listener;
@@ -23,14 +23,14 @@ public class MusicPlayer {
     }
 
     public void start(MusicFile audio) throws IOException {
-        if (playing) {
+        if (started) {
             mediaPLayer.stop();
             mediaPLayer.reset();
         }
         mediaPLayer.setDataSource(audio.getFilePath());
         mediaPLayer.prepare();
         mediaPLayer.start();
-        playing = true;
+        started = true;
     }
 
     public void pause() {
@@ -46,7 +46,7 @@ public class MusicPlayer {
             mediaPLayer.stop();
             mediaPLayer.reset();
         }
-        playing = false;
+        started = false;
     }
 
     public void destroy() {
@@ -76,7 +76,11 @@ public class MusicPlayer {
         }
     };
 
+    public boolean isStarted() {
+        return started;
+    }
+
     public boolean isPlaying() {
-        return playing;
+        return mediaPLayer.isPlaying();
     }
 }

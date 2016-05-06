@@ -73,6 +73,7 @@ public class CmdInterpretor {
     private String command_music_stop;
     private String command_music_next;
     private String command_music_previous;
+    private String command_music_song;
     private String command_volume_down;
     private String command_quit;
     private boolean useTrigger = false;
@@ -167,6 +168,8 @@ public class CmdInterpretor {
                 } else if (cmd.toLowerCase().matches(command_music_previous)) {
                     appCmdExec.changeMusicState(AppCmdExecutor.MusicState.PREVIOUS);
                     result = InterpretationResult.APPLIED;
+                } else if (StringUtils.containsIgnoreCase(cmd, command_music_song)) {
+                    result = interpretePlaySongCmd(cmd);
                 } else if (cmd.toLowerCase().matches(command_grid_display)) {
                     apiCmdExec.showGridOnOverlay(true);
                     result = InterpretationResult.APPLIED;
@@ -184,7 +187,8 @@ public class CmdInterpretor {
                 } else if (StringUtils.containsIgnoreCase(cmd, command_delete)) {
                     result = interpretDelCmd(cmd);
                 } else if (cmd.toLowerCase().matches(command_home)) {
-                    trmCmdExec.executeCommande("input keyevent 3", true);
+                    //trmCmdExec.executeCommande("input keyevent 3", true);
+                    apiCmdExec.goHome();
                     result = InterpretationResult.APPLIED;
                 } else if (cmd.toLowerCase().matches(command_back)) {
                     trmCmdExec.executeCommande("input keyevent 4", true);
@@ -207,6 +211,7 @@ public class CmdInterpretor {
         }
         return result;
     }
+
 
     private InterpretationResult interpreteSendCmd(String cmd) {
         String[] splitCommand = cmd.split(command_send);
@@ -386,6 +391,25 @@ public class CmdInterpretor {
         } else {
             return InterpretationResult.UNINTERPRETED;
         }
+    }
+
+    private InterpretationResult interpretePlaySongCmd(String cmd) {
+        String[] splitCommand = cmd.split(command_music_song);
+        boolean trigger = !ACPreference.getUseTrigger(context);
+        for (String str : splitCommand) {
+            if (StringUtils.containsIgnoreCase(str, command_trigger)) {
+                trigger = true;
+            } else if (trigger) {
+
+                if (!TextUtils.isEmpty(str)) {
+                    appCmdExec.playMusic(str.trim());
+                    return InterpretationResult.APPLIED;
+                }
+
+            }
+        }
+        return InterpretationResult.UNINTERPRETED;
+
     }
 
     private InterpretationResult interpretVolumeCmd(String cmd) {
@@ -576,6 +600,9 @@ public class CmdInterpretor {
         cmdListStr.add(command_music_next);
         command_music_previous = context.getString(R.string.command_previous_music);
         cmdListStr.add(command_music_previous);
+
+        command_music_song = context.getString(R.string.command_play_song);
+        cmdListStr.add(command_music_song);
 
         command_quit = context.getString(R.string.command_quit);
         cmdListStr.add(command_quit);

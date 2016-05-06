@@ -49,7 +49,7 @@ public class MusicPlayerActivity extends AppCompatActivity implements IMusicPlay
         setContentView(R.layout.activity_music);
 
         boolean random = ACPreference.getAudioPlayerRandom(this);
-        mPlmanager = new PlaylistManager(this,random);
+        mPlmanager = new PlaylistManager(this, random);
         mMusicPLayer = new MusicPlayer(this);
 
         initViews();
@@ -199,7 +199,7 @@ public class MusicPlayerActivity extends AppCompatActivity implements IMusicPlay
 
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
-            if (mMusicPLayer.isPlaying()) {
+            if (mMusicPLayer.isStarted()) {
                 try {
                     mMusicPLayer.seekTo(seekBar.getProgress());
                 } catch (IOException e) {
@@ -247,7 +247,7 @@ public class MusicPlayerActivity extends AppCompatActivity implements IMusicPlay
 
     @Override
     public void start() {
-        if (mMusicPLayer.isPlaying()) {
+        if (mMusicPLayer.isStarted()) {
             mMusicPLayer.play();
         } else {
             try {
@@ -286,5 +286,10 @@ public class MusicPlayerActivity extends AppCompatActivity implements IMusicPlay
     public void stop() {
         mMusicPLayer.stop();
         this.setStopped();
+    }
+
+    @Override
+    public boolean isPlaying() {
+        return mMusicPLayer.isPlaying();
     }
 }

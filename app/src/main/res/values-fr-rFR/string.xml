@@ -7,7 +7,7 @@
     <string name="command_write">écrit</string>
     <string name="command_delete">supprime</string>
     <string name="command_send_to">envoie à</string>
-    <string name="command_play">joue</string>
+    <string name="command_play_song">joue</string>
 
 
 

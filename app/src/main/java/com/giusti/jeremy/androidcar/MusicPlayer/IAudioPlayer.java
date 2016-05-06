@@ -17,4 +17,5 @@ public interface IAudioPlayer {
 
     void stop();
 
+    boolean isPlaying();
 }

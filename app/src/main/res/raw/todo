@@ -1,16 +1,25 @@
 TODO:
 
-pour gestion commandes ---------------------------------------------------
+Commandes ---------------------------------------------------
 
 - pebble compatibility
-- srinking fab when on screen border
-- launch specifique music
 - meilleur recherche de contact pour appel et sms
+
+
+
+Lecteur audio -------------------------------------------------
+
 - notification music
 
-
-POUR module lecteur audio -------------------------------------------------
-
-- gestion de playlist
-- gestion de playlist par artiste
+- order playlist par order alphabetique | use hashmap for all song list
 - music list draggable etc
+
+- extract music logique of activity to new model on acservice
+ -> activity will only send event and receive other music event
+
+- gestion de playlist par artiste
+- gestion de playlist
+
+FAB ------------------------------------------------------------
+
+- shrinking fab when on screen border
