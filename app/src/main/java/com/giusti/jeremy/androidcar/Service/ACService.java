@@ -1,13 +1,10 @@
 package com.giusti.jeremy.androidcar.Service;
 
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.Resources;
 import android.graphics.PixelFormat;
 import android.os.Build;
 import android.os.IBinder;
@@ -18,17 +15,17 @@ import android.view.Gravity;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import com.giusti.jeremy.androidcar.Activity.SettingActivity;
 import com.giusti.jeremy.androidcar.Commands.AppCmdExecutor;
 import com.giusti.jeremy.androidcar.Commands.CmdInterpretor;
 import com.giusti.jeremy.androidcar.Constants.ACPreference;
 import com.giusti.jeremy.androidcar.Constants.ISettingChangeListener;
-import com.giusti.jeremy.androidcar.MusicPlayer.IAudioPlayer;
+import com.giusti.jeremy.androidcar.MusicPlayer.IMusicsPlayer;
 import com.giusti.jeremy.androidcar.R;
 import com.giusti.jeremy.androidcar.ScreenOverlay.CmdButton;
 import com.giusti.jeremy.androidcar.ScreenOverlay.ScreenMapper;
 import com.giusti.jeremy.androidcar.SpeechRecognition.ISpeechResultListener;
 import com.giusti.jeremy.androidcar.SpeechRecognition.SpeechListener;
+import com.giusti.jeremy.androidcar.UI.AcNotifications;
 
 import java.util.ArrayList;
 
@@ -48,7 +45,7 @@ public class ACService extends Service implements ISpeechResultListener, ISettin
     private CmdInterpretor cmdInterpretor;
     private SpeechListener speechListener;
 
-    private IAudioPlayer mAudioPlayer = null;
+    private IMusicsPlayer mAudioPlayer = null;
     private boolean mAudioPlayerPaused = false;
 
 
@@ -74,7 +71,7 @@ public class ACService extends Service implements ISpeechResultListener, ISettin
         }
         displayCmdButton();
         displayGridOverlay();
-        displayNotification();
+        startForeground(AcNotifications.AC_NOTIF_ID, AcNotifications.getDefaultNotification(this));
         startOrientationChangeListener();
         cmdInterpretor = new CmdInterpretor(this, mScreenMapper);
         speechListener = new SpeechListener(this, this);
@@ -91,35 +88,6 @@ public class ACService extends Service implements ISpeechResultListener, ISettin
         this.registerReceiver(mBroadcastReceiver, filter);
     }
 
-    /**
-     * show persistant notif wich open setting if clicked
-     */
-    private void displayNotification() {
-
-        Intent notificationIntent = new Intent(this, SettingActivity.class);
-
-
-        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-                | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-                notificationIntent, 0);
-
-
-        Resources res = this.getResources();
-        Notification.Builder builder = new Notification.Builder(this);
-
-        builder.setContentIntent(contentIntent)
-                .setSmallIcon(R.drawable.ic_action_speech)
-                .setWhen(System.currentTimeMillis())
-                .setAutoCancel(true)
-                .setContentTitle(res.getString(R.string.notif_title))
-                .setContentText(res.getString(R.string.notif_text));
-
-        Notification notif = builder.build();
-
-        startForeground(1337, notif);
-    }
 
     /**
      * show grid overlay
@@ -266,15 +234,19 @@ public class ACService extends Service implements ISpeechResultListener, ISettin
         stopService(new Intent(this, ACService.class));
     }
 
-    public void audioPlayerLaunched(IAudioPlayer audioPlayer) {
+    public void audioPlayerLaunched(IMusicsPlayer audioPlayer) {
         this.mAudioPlayer = audioPlayer;
+//TODO
+//        startForeground(AcNotifications.AC_NOTIF_ID, AcNotifications.getMusicNotification(this, audioPlayer));
+
     }
 
     public void audioPlayerDestroyed() {
         this.mAudioPlayer = null;
+        startForeground(AcNotifications.AC_NOTIF_ID, AcNotifications.getDefaultNotification(this));
     }
 
-    public IAudioPlayer getAudioPlayer() {
+    public IMusicsPlayer getAudioPlayer() {
         return mAudioPlayer;
     }
 }

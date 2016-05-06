@@ -36,7 +36,7 @@
             android:parentActivityName=".Activity.MainActivity"></activity>
 
         <activity
-            android:name=".Activity.MusicPlayerActivity"
+            android:name=".Activity.AudioPlayerActivity"
             android:screenOrientation="portrait"></activity>
 
         <activity android:name=".Activity.CommandsListActivity"></activity>

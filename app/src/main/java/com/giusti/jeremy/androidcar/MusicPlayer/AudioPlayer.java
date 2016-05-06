@@ -8,14 +8,14 @@ import java.io.IOException;
 /**
  * Created by jérémy on 05/05/2016.
  */
-public class MusicPlayer {
+public class AudioPlayer {
     private static final int UPDATE_FREQUENCY_MILLISEC = 1000;
-    private IMusicPlayBackListener listener;
+    private IAudioPlayerListener listener;
     private MediaPlayer mediaPLayer;
     private Handler mediaPostionUpdaterHandler = new Handler();
     private boolean started = false;
 
-    public MusicPlayer(IMusicPlayBackListener listener) {
+    public AudioPlayer(IAudioPlayerListener listener) {
         this.listener = listener;
         mediaPLayer = new MediaPlayer();
         mediaPLayer.setOnCompletionListener(completionListener);
@@ -42,7 +42,7 @@ public class MusicPlayer {
     }
 
     public void stop() {
-        if (mediaPLayer.isPlaying()) {
+        if (started && mediaPLayer.isPlaying()) {
             mediaPLayer.stop();
             mediaPLayer.reset();
         }

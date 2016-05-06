@@ -16,6 +16,7 @@
     <string name="all_permission_needed">The application need all the permissions to work.\n Restart if you want to allow all permissions.</string>
     <string name="open_music_player">open music player</string>
     <string name="music_player_off">Music player isn\'t started</string>
+    <string name="error_seeking">An error happened while trying to change postion on music</string>
 
 
 </resources>

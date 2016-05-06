@@ -269,7 +269,7 @@ public class SettingActivity extends AppCompatActivity implements ActivityCompat
     }
 
     public void clickOpenMusicPlayer(View view) {
-        Intent openMusicActivity = new Intent(this, MusicPlayerActivity.class);
+        Intent openMusicActivity = new Intent(this, AudioPlayerActivity.class);
         startActivity(openMusicActivity);
     }
 }
