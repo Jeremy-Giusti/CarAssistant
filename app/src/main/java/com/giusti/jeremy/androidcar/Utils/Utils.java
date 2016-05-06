@@ -140,4 +140,8 @@ public class Utils {
         dimens=new Pair(width, height);
         return dimens;
     }
+
+    public static int getIntPixelFromDimens(int dimen, Context context) {
+       return  context.getResources().getDimensionPixelSize(dimen);
+    }
 }

@@ -8,4 +8,5 @@
     <dimen name="title_size">30sp</dimen>
     <dimen name="smaller_button_size">42dp</dimen>
     <dimen name="normal_text">20sp</dimen>
+    <dimen name="padding_cmd_button">15dp</dimen>
 </resources>

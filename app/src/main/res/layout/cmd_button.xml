@@ -15,7 +15,7 @@
         android:background="@drawable/fab_shape"
         android:src="@drawable/ic_action_speech"
         android:scaleType="centerInside"
-        android:padding="15dp"/>
+        android:padding="@dimen/padding_cmd_button"/>
 
 
 </RelativeLayout>
