@@ -2,24 +2,25 @@ TODO:
 
 Commandes ---------------------------------------------------
 
-- pebble compatibility
-- meilleur recherche de contact pour appel et sms
+1- pebble compatibility
+3- meilleur recherche de contact pour appel et sms
 
 
 
 Lecteur audio -------------------------------------------------
 
-- notification music
+1- notification music
 
-- order playlist par order alphabetique | use hashmap for all song list
-- music list draggable etc
+2- ouvre/lance (l'application de) music
+3- order playlist par order alphabetique | use hashmap for all song list
+3- music list draggable etc
 
-- extract music logique of activity to new model on acservice
+3- extract music logique of activity to new model on acservice
  -> activity will only send event and receive other music event
 
-- gestion de playlist par artiste
-- gestion de playlist
+4- gestion de playlist par artiste
+4- gestion de playlist
 
 FAB ------------------------------------------------------------
 
-- shrinking fab when on screen border
+1- shrinking fab when on screen border

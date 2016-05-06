@@ -3,14 +3,20 @@ package com.giusti.jeremy.androidcar.ScreenOverlay;
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.os.Handler;
+import android.util.Pair;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.ScaleAnimation;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
+import com.giusti.jeremy.androidcar.Constants.ACPreference;
 import com.giusti.jeremy.androidcar.R;
 import com.giusti.jeremy.androidcar.Service.IFloatingButtonClickListener;
 import com.giusti.jeremy.androidcar.Utils.Utils;
@@ -22,8 +28,11 @@ import com.giusti.jeremy.androidcar.Utils.Utils;
  */
 public class CmdButton extends RelativeLayout {
     // if the event if 30 px away from it starting position it is a movement and not a click anymore
-    private final static int differenceBetweenClickAndMove = 50;
+    private final static int differenceBetweenClickAndMove = 20;
+
     private static final long LONG_CLICK_TIME = 750;
+    public static final int ANIMATION_DURATION_MILLIS = 400;
+
     private final IFloatingButtonClickListener clicksListener;
     private final Context context;
     private final ImageButton cmdButton;
@@ -31,6 +40,7 @@ public class CmdButton extends RelativeLayout {
     private boolean endServiceMode = false;
     private WindowManager.LayoutParams rootParams;
     private WindowManager mWm;
+    private boolean buttonShrinked = false;
 
     public CmdButton(Context context, IFloatingButtonClickListener clicksListener) {
         super(context);
@@ -77,12 +87,68 @@ public class CmdButton extends RelativeLayout {
             params.leftMargin += (int) deltaX;
             cmdButton.setLayoutParams(params);
         } else {
-            if (rootParams.y == 0) cmdButton.getY();
-            if (rootParams.x == 0) cmdButton.getX();
 
             rootParams.y += (int) deltaY;
             rootParams.x += (int) deltaX;
             mWm.updateViewLayout(this, rootParams);
+        }
+    }
+
+    private void onEndMovingButton(float evenx, float eventy) {
+        Pair<Integer, Integer> screenDimen = Utils.getScreenSize(context);
+        int statusBarHeight = ACPreference.getStatusBarHeight(context);
+
+        if (evenx < cmdButton.getWidth() / 2) {
+            shrinkButton(Gravity.LEFT, R.anim.shrink_to_top_left);
+        } else if (eventy < (cmdButton.getHeight() / 2 + statusBarHeight)) {
+            shrinkButton(Gravity.TOP, R.anim.shrink_to_top_left);
+        } else if ((screenDimen.first - evenx) < cmdButton.getWidth() / 2) {
+            shrinkButton(Gravity.RIGHT, R.anim.shrink_to_right);
+        } else if ((screenDimen.second - eventy) < cmdButton.getHeight() / 2) {
+            shrinkButton(Gravity.BOTTOM, R.anim.shrink_to_bottom);
+        }
+    }
+
+    private void shrinkButton(final int gravity, int anim) {
+        if (!buttonShrinked) {
+
+            buttonShrinked = true;
+
+            final Animation shrinkAnim = AnimationUtils.loadAnimation(context, anim);
+
+            ViewGroup.LayoutParams params = cmdButton.getLayoutParams();
+            params.width = params.width / 2;
+            params.height = params.height / 2;
+            cmdButton.setLayoutParams(params);
+
+            cmdButton.startAnimation(shrinkAnim);
+            layout.setGravity(gravity);
+
+        }
+    }
+
+    private void unShinkButton() {
+        if (buttonShrinked) {
+
+            final ScaleAnimation growAnim = new ScaleAnimation(0.5f, 1.0f, 0.5f, 1.0f);
+
+            growAnim.setDuration(ANIMATION_DURATION_MILLIS);
+
+            ViewGroup.LayoutParams params = cmdButton.getLayoutParams();
+            params.width = params.width * 2;
+            params.height = params.height * 2;
+
+            cmdButton.setLayoutParams(params);
+            cmdButton.startAnimation(growAnim);
+
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    layout.setGravity(Gravity.CENTER);
+                    buttonShrinked = false;
+                }
+            }, ANIMATION_DURATION_MILLIS);
+
         }
     }
 
@@ -120,6 +186,7 @@ public class CmdButton extends RelativeLayout {
                     startY = eventY;
                     previousX = eventX;
                     previousY = eventY;
+                    unShinkButton();
                     launchLongClickTimer();
                     break;
                 case MotionEvent.ACTION_MOVE:
@@ -130,12 +197,13 @@ public class CmdButton extends RelativeLayout {
                             isMoving = true;
                         }
                     } else {
-                        moveButton(eventX - previousX  , eventY - previousY);
+                        moveButton(eventX - previousX, eventY - previousY);
                     }
                     break;
                 case MotionEvent.ACTION_UP:
                     if (isMoving) {
                         isMoving = false;
+                        onEndMovingButton(eventX, eventY);
                         longClickHandler.removeCallbacks(longClickRunnable);
                     } else if (longClicked) {
                         longClicked = false;

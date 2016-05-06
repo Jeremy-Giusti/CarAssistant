@@ -5,6 +5,9 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.os.Vibrator;
 import android.util.DisplayMetrics;
+import android.util.Pair;
+
+import com.giusti.jeremy.androidcar.Constants.ACPreference;
 
 import java.util.concurrent.TimeUnit;
 
@@ -106,5 +109,35 @@ public class Utils {
                 TimeUnit.MILLISECONDS.toSeconds(millisec) -
                         TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millisec))
         );
+    }
+
+    /**
+     * return the screen size minus status bar height
+     * @param context
+     * @return
+     */
+    public static Pair<Integer, Integer> getDisplayableScreenSize(Context context) {
+        Pair dimens ;
+        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+        int width = metrics.widthPixels;
+        int height = metrics.heightPixels;
+        height = height - (ACPreference.getStatusBarHeight(context));
+        dimens=new Pair(width, height);
+        return dimens;
+    }
+
+    /**
+     * return the screen size
+     * <br> see also getDisplayableScreenSize()
+     * @param context
+     * @return
+     */
+    public static Pair<Integer, Integer> getScreenSize(Context context) {
+        Pair dimens ;
+        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+        int width = metrics.widthPixels;
+        int height = metrics.heightPixels;
+        dimens=new Pair(width, height);
+        return dimens;
     }
 }

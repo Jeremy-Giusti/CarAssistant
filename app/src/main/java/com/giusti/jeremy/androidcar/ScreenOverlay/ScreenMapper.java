@@ -25,7 +25,6 @@ public class ScreenMapper extends RelativeLayout implements IMotionEventCmdListe
     private GridView grid;
     private CustomGridAdapter gridAdapter;
     private CoordinateConverter coordCvt;
-    private Context context;
 
     public ScreenMapper(Context context) {
         super(context);
@@ -36,7 +35,6 @@ public class ScreenMapper extends RelativeLayout implements IMotionEventCmdListe
         coordCvt = new CoordinateConverter(context);
 
         grid = (GridView) findViewById(R.id.grid);
-        this.context=context;
         initGrid(context);
     }
 
