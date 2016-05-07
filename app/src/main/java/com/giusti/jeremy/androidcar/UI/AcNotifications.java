@@ -9,7 +9,9 @@ import android.content.res.Resources;
 import com.giusti.jeremy.androidcar.Activity.AudioPlayerActivity;
 import com.giusti.jeremy.androidcar.Activity.SettingActivity;
 import com.giusti.jeremy.androidcar.MusicPlayer.MusicFile;
+import com.giusti.jeremy.androidcar.MusicPlayer.MusicIntentListenerService;
 import com.giusti.jeremy.androidcar.R;
+import com.giusti.jeremy.androidcar.Service.ACService;
 import com.giusti.jeremy.androidcar.Utils.Utils;
 
 /**
@@ -52,14 +54,13 @@ public class AcNotifications {
         Notification.Builder builder = new Notification.Builder(context);
 
         Intent intent = new Intent(context, AudioPlayerActivity.class);
-        PendingIntent showIntent = PendingIntent.getActivity(context, AudioPlayerActivity.INTENT_REQUEST_SHOW, intent, 0);
+        PendingIntent showIntent = PendingIntent.getActivity(context, MusicIntentListenerService.INTENT_REQUEST_SHOW, intent, 0);
 
         String duration = Utils.getDisplayableTime(music.getDuration());
         builder.setSmallIcon(R.drawable.ic_music_player)
                 .setContentTitle(music.getTitle())
                 .setContentText(String.valueOf(duration))
                 .setContentIntent(showIntent)
-                .setAutoCancel(true)
                 .addAction(getMusicPrevAction(context))
                 .addAction(getMusicPlayPauseAction(context, !playing))
                 .addAction(getMusicNextAction(context)).build();
@@ -69,19 +70,17 @@ public class AcNotifications {
     }
 
     private static Notification.Action getMusicPrevAction(Context context) {
-        Intent intent = new Intent(context, AudioPlayerActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra(AudioPlayerActivity.INTENT_REQUEST, AudioPlayerActivity.INTENT_REQUEST_PREV);
-        PendingIntent prevIntent = PendingIntent.getActivity(context, AudioPlayerActivity.INTENT_REQUEST_PREV, intent, 0);
+        Intent intent = new Intent(context, ACService.class);
+        intent.putExtra(MusicIntentListenerService.INTENT_REQUEST, MusicIntentListenerService.INTENT_REQUEST_PREV);
+        PendingIntent prevIntent = PendingIntent.getService(context, MusicIntentListenerService.INTENT_REQUEST_PREV, intent, 0);
         Notification.Action.Builder actionBuilder = new Notification.Action.Builder(R.drawable.ic_previous_small, "previous", prevIntent);
         return actionBuilder.build();
     }
 
     private static Notification.Action getMusicNextAction(Context context) {
-        Intent intent = new Intent(context, AudioPlayerActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra(AudioPlayerActivity.INTENT_REQUEST, AudioPlayerActivity.INTENT_REQUEST_NEXT);
-        PendingIntent nextIntent = PendingIntent.getActivity(context, AudioPlayerActivity.INTENT_REQUEST_NEXT, intent, 0);
+        Intent intent = new Intent(context, MusicIntentListenerService.class);
+        intent.putExtra(MusicIntentListenerService.INTENT_REQUEST, MusicIntentListenerService.INTENT_REQUEST_NEXT);
+        PendingIntent nextIntent = PendingIntent.getService(context, MusicIntentListenerService.INTENT_REQUEST_NEXT, intent, 0);
         Notification.Action.Builder actionBuilder = new Notification.Action.Builder(R.drawable.ic_next_small, "next", nextIntent);
         return actionBuilder.build();
     }
@@ -94,16 +93,15 @@ public class AcNotifications {
         if (play) {
             ic = R.drawable.ic_play_small;
             title = "play";
-            request = AudioPlayerActivity.INTENT_REQUEST_PLAY;
+            request = MusicIntentListenerService.INTENT_REQUEST_PLAY;
         } else {
             ic = R.drawable.ic_pause_small;
             title = "pause";
-            request = AudioPlayerActivity.INTENT_REQUEST_PAUSE;
+            request = MusicIntentListenerService.INTENT_REQUEST_PAUSE;
         }
-        Intent intent = new Intent(context, AudioPlayerActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra(AudioPlayerActivity.INTENT_REQUEST, request);
-        PendingIntent pauseIntent = PendingIntent.getActivity(context, request, intent, 0);
+        Intent intent = new Intent(context, MusicIntentListenerService.class);
+        intent.putExtra(MusicIntentListenerService.INTENT_REQUEST, request);
+        PendingIntent pauseIntent = PendingIntent.getService(context, request, intent, 0);
         Notification.Action.Builder actionBuilder = new Notification.Action.Builder(ic, title, pauseIntent);
         return actionBuilder.build();
     }

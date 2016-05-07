@@ -33,12 +33,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements MusicListA
     public static final String STARTPLAYER_EXTRA_KEY = "startPlayer";
     public static final String PLAY_ANYTHING = "play anything";
 
-    public static final String INTENT_REQUEST = "request";
-    public static final int INTENT_REQUEST_SHOW = 200;
-    public static final int INTENT_REQUEST_PLAY = 201;
-    public static final int INTENT_REQUEST_PAUSE = 202;
-    public static final int INTENT_REQUEST_NEXT = 203;
-    public static final int INTENT_REQUEST_PREV = 204;
+
 
 
     private RecyclerView mMusics_rv;
@@ -109,8 +104,6 @@ public class AudioPlayerActivity extends AppCompatActivity implements MusicListA
             } else {
                 mMusicPlayer.play(extra);
             }
-        } else {
-            onNewIntent(getIntent());
         }
     }
 
@@ -234,30 +227,4 @@ public class AudioPlayerActivity extends AppCompatActivity implements MusicListA
         });
     }
 
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-            int request = intent.getIntExtra(INTENT_REQUEST, -1);
-            switch (request) {
-                case INTENT_REQUEST_SHOW:
-                    //? TODO ?
-                    break;
-                case INTENT_REQUEST_PLAY:
-                    mMusicPlayer.start();
-                    break;
-                case INTENT_REQUEST_PAUSE:
-                    mMusicPlayer.pause();
-                    break;
-                case INTENT_REQUEST_NEXT:
-                    mMusicPlayer.next();
-                    break;
-                case INTENT_REQUEST_PREV:
-                    mMusicPlayer.previous();
-                    break;
-                default:
-                    break;
-            }
-
-        super.onNewIntent(intent);
-    }
 }

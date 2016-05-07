@@ -133,12 +133,6 @@ public class MusicsPlayer implements IMusicsPlayer, IAudioPlayerListener {
         return mAudioPLayer.isPlaying();
     }
 
-    @Override
-    public void destroy() {
-        removeMusicPlayerNotification();
-        this.mAudioPLayer.destroy();
-        instance = null;
-    }
 
     @Override
     public ArrayList<MusicFile> getDisplayablePlaylist() {
@@ -246,7 +240,7 @@ public class MusicsPlayer implements IMusicsPlayer, IAudioPlayerListener {
 
     @Override
     public void onMusicEnded() {
-
+        this.next();
     }
 
 
@@ -272,6 +266,16 @@ public class MusicsPlayer implements IMusicsPlayer, IAudioPlayerListener {
                     (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             mNotificationManager.cancel(AcNotifications.AC_NOTIF_ID);
         }
+    }
+
+    @Override
+    public void destroy() {
+        removeMusicPlayerNotification();
+        this.mAudioPLayer.destroy();
+        if (MusicIntentListenerService.getInstance() != null) {
+            MusicIntentListenerService.getInstance().stopSelf();
+        }
+        instance = null;
     }
 
 }
