@@ -1,9 +1,13 @@
 package com.giusti.jeremy.androidcar.Activity;
 
+import android.app.NotificationManager;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
@@ -15,6 +19,7 @@ import com.giusti.jeremy.androidcar.MusicPlayer.MusicListAdapter;
 import com.giusti.jeremy.androidcar.MusicPlayer.MusicsPlayer;
 import com.giusti.jeremy.androidcar.R;
 import com.giusti.jeremy.androidcar.Service.ACService;
+import com.giusti.jeremy.androidcar.UI.AcNotifications;
 import com.giusti.jeremy.androidcar.Utils.Utils;
 
 import java.util.ArrayList;
@@ -27,6 +32,13 @@ import java.util.ArrayList;
 public class AudioPlayerActivity extends AppCompatActivity implements MusicListAdapter.IItemEventListener, IMusicsPlayerEventListener {
     public static final String STARTPLAYER_EXTRA_KEY = "startPlayer";
     public static final String PLAY_ANYTHING = "play anything";
+
+    public static final String INTENT_REQUEST = "request";
+    public static final int INTENT_REQUEST_SHOW = 200;
+    public static final int INTENT_REQUEST_PLAY = 201;
+    public static final int INTENT_REQUEST_PAUSE = 202;
+    public static final int INTENT_REQUEST_NEXT = 203;
+    public static final int INTENT_REQUEST_PREV = 204;
 
 
     private RecyclerView mMusics_rv;
@@ -46,13 +58,9 @@ public class AudioPlayerActivity extends AppCompatActivity implements MusicListA
 
         mMusicPlayer = MusicsPlayer.getInstance(this);
         mMusicPlayer.addListener(this);
-
-        if (ACService.getInstance() != null) {
-            ACService.getInstance().audioPlayerLaunched(mMusicPlayer);
-        }
+        if(mMusicPlayer.isPlaying()) mPlayButton.setSelected(true);
 
         manageExtra();
-
 
     }
 
@@ -74,13 +82,18 @@ public class AudioPlayerActivity extends AppCompatActivity implements MusicListA
 
     }
 
-    private void fillViews(MusicFile currentSong) {
-        mDuration_tv.setText("00:00/" + Utils.getDisplayableTime(currentSong.getDuration()));
-        mMusicTitle_tv.setText(currentSong.getTitle() + " - " + currentSong.getArtist());
-        mDuration_sb.setMax((int) currentSong.getDuration());
-        mDuration_sb.setProgress(0);
+    private void fillViews(final MusicFile currentSong) {
+        AudioPlayerActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mDuration_tv.setText("00:00/" + Utils.getDisplayableTime(currentSong.getDuration()));
+                mMusicTitle_tv.setText(currentSong.getTitle() + " - " + currentSong.getArtist());
+                mDuration_sb.setMax((int) currentSong.getDuration());
+                mDuration_sb.setProgress(0);
 
-        ((MusicListAdapter) mMusics_rv.getAdapter()).updateList(mMusicPlayer.getDisplayablePlaylist());
+                ((MusicListAdapter) mMusics_rv.getAdapter()).updateList(mMusicPlayer.getDisplayablePlaylist());
+            }
+        });
 
     }
 
@@ -89,13 +102,15 @@ public class AudioPlayerActivity extends AppCompatActivity implements MusicListA
      * the activity may have een started to play a specifique song or to immediatly start
      */
     private void manageExtra() {
-        if (getIntent().getExtras() != null) {
+        if (!TextUtils.isEmpty(getIntent().getStringExtra(STARTPLAYER_EXTRA_KEY))) {
             String extra = getIntent().getExtras().getString(STARTPLAYER_EXTRA_KEY);
             if (PLAY_ANYTHING.equals(extra)) {
                 this.clickPlayPause(mPlayButton);
             } else {
                 mMusicPlayer.play(extra);
             }
+        } else {
+            onNewIntent(getIntent());
         }
     }
 
@@ -165,10 +180,9 @@ public class AudioPlayerActivity extends AppCompatActivity implements MusicListA
 
     @Override
     protected void onDestroy() {
-        mMusicPlayer.destroy();
-        if (ACService.getInstance() != null) {
-            ACService.getInstance().audioPlayerDestroyed();
-        }
+        mMusicPlayer.removeListener(this);
+       // mMusicPlayer.destroy();//keep it ? destroy musicsplayer if no listener ?
+
         super.onDestroy();
     }
 
@@ -218,5 +232,32 @@ public class AudioPlayerActivity extends AppCompatActivity implements MusicListA
                 mDuration_sb.setProgress(position);
             }
         });
+    }
+
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+            int request = intent.getIntExtra(INTENT_REQUEST, -1);
+            switch (request) {
+                case INTENT_REQUEST_SHOW:
+                    //? TODO ?
+                    break;
+                case INTENT_REQUEST_PLAY:
+                    mMusicPlayer.start();
+                    break;
+                case INTENT_REQUEST_PAUSE:
+                    mMusicPlayer.pause();
+                    break;
+                case INTENT_REQUEST_NEXT:
+                    mMusicPlayer.next();
+                    break;
+                case INTENT_REQUEST_PREV:
+                    mMusicPlayer.previous();
+                    break;
+                default:
+                    break;
+            }
+
+        super.onNewIntent(intent);
     }
 }

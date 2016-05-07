@@ -15,8 +15,6 @@ Lecteur audio -------------------------------------------------
 3- order playlist par order alphabetique | use hashmap for all song list
 3- music list draggable etc
 
-3- extract music logique of activity to new model on acservice
- -> activity will only send event and receive other music event
 
 4- gestion de playlist par artiste
 4- gestion de playlist

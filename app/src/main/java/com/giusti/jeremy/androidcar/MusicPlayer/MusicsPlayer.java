@@ -1,10 +1,13 @@
 package com.giusti.jeremy.androidcar.MusicPlayer;
 
+import android.app.NotificationManager;
 import android.content.Context;
 import android.widget.Toast;
 
 import com.giusti.jeremy.androidcar.Constants.ACPreference;
 import com.giusti.jeremy.androidcar.R;
+import com.giusti.jeremy.androidcar.Service.ACService;
+import com.giusti.jeremy.androidcar.UI.AcNotifications;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -132,7 +135,9 @@ public class MusicsPlayer implements IMusicsPlayer, IAudioPlayerListener {
 
     @Override
     public void destroy() {
+        removeMusicPlayerNotification();
         this.mAudioPLayer.destroy();
+        instance = null;
     }
 
     @Override
@@ -181,26 +186,31 @@ public class MusicsPlayer implements IMusicsPlayer, IAudioPlayerListener {
                 for (IMusicsPlayerEventListener listener : listenersList) {
                     listener.onMusicPlay();
                 }
+                displayMusicPlayerNotification();
                 break;
             case CHANGED:
                 for (IMusicsPlayerEventListener listener : listenersList) {
                     listener.onMusicChange(mPlmanager.getCurrentSong());
                 }
+                displayMusicPlayerNotification();
                 break;
             case START:
                 for (IMusicsPlayerEventListener listener : listenersList) {
                     listener.onMusicStart(mPlmanager.getCurrentSong());
                 }
+                displayMusicPlayerNotification();
                 break;
             case PAUSE:
                 for (IMusicsPlayerEventListener listener : listenersList) {
                     listener.onMusicPause();
                 }
+                displayMusicPlayerNotification();
                 break;
             case STOP:
                 for (IMusicsPlayerEventListener listener : listenersList) {
                     listener.onMusicStop();
                 }
+                displayMusicPlayerNotification();
                 break;
             case RANDOM:
                 for (IMusicsPlayerEventListener listener : listenersList) {
@@ -229,6 +239,9 @@ public class MusicsPlayer implements IMusicsPlayer, IAudioPlayerListener {
 
     public void removeListener(IMusicsPlayerEventListener listener) {
         this.listenersList.remove(listener);
+        if (listenersList.isEmpty() && !isPlaying()) {
+            this.destroy();
+        }
     }
 
     @Override
@@ -241,4 +254,24 @@ public class MusicsPlayer implements IMusicsPlayer, IAudioPlayerListener {
     public void onError() {
 
     }
+
+
+    private void displayMusicPlayerNotification() {
+        NotificationManager mNotificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.notify(AcNotifications.AC_NOTIF_ID, AcNotifications.getMusicNotification(context, mPlmanager.getCurrentSong(), isPlaying()));
+
+    }
+
+    private void removeMusicPlayerNotification() {
+        if (ACService.getInstance() != null) {
+            ACService.getInstance().displayNotification(AcNotifications.getDefaultNotification(context));
+        } else {
+
+            NotificationManager mNotificationManager =
+                    (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            mNotificationManager.cancel(AcNotifications.AC_NOTIF_ID);
+        }
+    }
+
 }

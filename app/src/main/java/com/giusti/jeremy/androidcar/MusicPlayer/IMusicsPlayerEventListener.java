@@ -14,5 +14,4 @@ public interface IMusicsPlayerEventListener {
     void onRepeatChange(boolean repeat);
     void onMusicplaying(int position, int duration);
 
-
 }

@@ -1,5 +1,6 @@
 package com.giusti.jeremy.androidcar.Service;
 
+import android.app.Notification;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -19,7 +20,7 @@ import com.giusti.jeremy.androidcar.Commands.AppCmdExecutor;
 import com.giusti.jeremy.androidcar.Commands.CmdInterpretor;
 import com.giusti.jeremy.androidcar.Constants.ACPreference;
 import com.giusti.jeremy.androidcar.Constants.ISettingChangeListener;
-import com.giusti.jeremy.androidcar.MusicPlayer.IMusicsPlayer;
+import com.giusti.jeremy.androidcar.MusicPlayer.MusicsPlayer;
 import com.giusti.jeremy.androidcar.R;
 import com.giusti.jeremy.androidcar.ScreenOverlay.CmdButton;
 import com.giusti.jeremy.androidcar.ScreenOverlay.ScreenMapper;
@@ -45,9 +46,16 @@ public class ACService extends Service implements ISpeechResultListener, ISettin
     private CmdInterpretor cmdInterpretor;
     private SpeechListener speechListener;
 
-    private IMusicsPlayer mAudioPlayer = null;
     private boolean mAudioPlayerPaused = false;
 
+    /**
+     * may be null
+     *
+     * @return
+     */
+    public static ACService getInstance() {
+        return instance;
+    }
 
     @Nullable
     @Override
@@ -71,7 +79,7 @@ public class ACService extends Service implements ISpeechResultListener, ISettin
         }
         displayCmdButton();
         displayGridOverlay();
-        startForeground(AcNotifications.AC_NOTIF_ID, AcNotifications.getDefaultNotification(this));
+        displayNotification(AcNotifications.getDefaultNotification(this));
         startOrientationChangeListener();
         cmdInterpretor = new CmdInterpretor(this, mScreenMapper);
         speechListener = new SpeechListener(this, this);
@@ -79,8 +87,12 @@ public class ACService extends Service implements ISpeechResultListener, ISettin
         instance = this;
     }
 
+    public void displayNotification(Notification notif) {
+        startForeground(AcNotifications.AC_NOTIF_ID, notif);
+    }
+
     /**
-     * listen to screen orientation chage to re display the grid if needed
+     * listen to screen orientation change to re display the grid if needed
      */
     private void startOrientationChangeListener() {
         IntentFilter filter = new IntentFilter();
@@ -147,27 +159,18 @@ public class ACService extends Service implements ISpeechResultListener, ISettin
 
     @Override
     public void onStartListening() {
-        if (this.mAudioPlayer != null && mAudioPlayer.isPlaying()) {
-            mAudioPlayer.pause();
+        if (MusicsPlayer.getInstance(this).isPlaying()) {
+            MusicsPlayer.getInstance(this).pause();
             mAudioPlayerPaused = true;
         }
     }
 
     @Override
     public void onStopListening() {
-        if (this.mAudioPlayer != null && mAudioPlayerPaused) {
-            mAudioPlayer.start();
+        if (mAudioPlayerPaused) {
+            MusicsPlayer.getInstance(this).start();
             mAudioPlayerPaused = false;
         }
-    }
-
-    /**
-     * may be null
-     *
-     * @return
-     */
-    public static ACService getInstance() {
-        return instance;
     }
 
 
@@ -234,19 +237,4 @@ public class ACService extends Service implements ISpeechResultListener, ISettin
         stopService(new Intent(this, ACService.class));
     }
 
-    public void audioPlayerLaunched(IMusicsPlayer audioPlayer) {
-        this.mAudioPlayer = audioPlayer;
-//TODO
-//        startForeground(AcNotifications.AC_NOTIF_ID, AcNotifications.getMusicNotification(this, audioPlayer));
-
-    }
-
-    public void audioPlayerDestroyed() {
-        this.mAudioPlayer = null;
-        startForeground(AcNotifications.AC_NOTIF_ID, AcNotifications.getDefaultNotification(this));
-    }
-
-    public IMusicsPlayer getAudioPlayer() {
-        return mAudioPlayer;
-    }
 }

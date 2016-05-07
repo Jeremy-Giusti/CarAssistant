@@ -8,6 +8,7 @@ import android.widget.Toast;
 import com.giusti.jeremy.androidcar.Activity.CommandsListActivity;
 import com.giusti.jeremy.androidcar.Activity.AudioPlayerActivity;
 import com.giusti.jeremy.androidcar.Activity.SettingActivity;
+import com.giusti.jeremy.androidcar.MusicPlayer.MusicsPlayer;
 import com.giusti.jeremy.androidcar.R;
 import com.giusti.jeremy.androidcar.Service.ACService;
 
@@ -41,43 +42,43 @@ public class AppCmdExecutor {
     }
 
     public void changeMusicState(MusicState requestedState) {
-        if (ACService.getInstance().getAudioPlayer() != null) {
+//        if (ACService.getInstance().getAudioPlayer() != null) {
             switch (requestedState) {
                 case PLAY:
-                    ACService.getInstance().getAudioPlayer().start();
+                    MusicsPlayer.getInstance(context).start();
                     break;
                 case PAUSE:
-                    ACService.getInstance().getAudioPlayer().pause();
+                    MusicsPlayer.getInstance(context).pause();
                     break;
                 case STOP:
-                    ACService.getInstance().getAudioPlayer().stop();
+                    MusicsPlayer.getInstance(context).stop();
                     break;
                 case NEXT:
-                    ACService.getInstance().getAudioPlayer().next();
+                    MusicsPlayer.getInstance(context).next();
                     break;
                 case PREVIOUS:
-                    ACService.getInstance().getAudioPlayer().previous();
+                    MusicsPlayer.getInstance(context).previous();
                     break;
             }
-        } else if (requestedState == MusicState.PLAY) {
-            Intent startMusicIntent = new Intent(context, AudioPlayerActivity.class);
-            startMusicIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startMusicIntent.putExtra(AudioPlayerActivity.STARTPLAYER_EXTRA_KEY, AudioPlayerActivity.PLAY_ANYTHING);
-            ACService.getInstance().startActivity(startMusicIntent);
-        } else {
-            Toast.makeText(context, R.string.music_player_off, Toast.LENGTH_LONG).show();
-        }
+//        } else if (requestedState == MusicState.PLAY) {
+//            Intent startMusicIntent = new Intent(context, AudioPlayerActivity.class);
+//            startMusicIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//            startMusicIntent.putExtra(AudioPlayerActivity.STARTPLAYER_EXTRA_KEY, AudioPlayerActivity.PLAY_ANYTHING);
+//            ACService.getInstance().startActivity(startMusicIntent);
+//        } else {
+//            Toast.makeText(context, R.string.music_player_off, Toast.LENGTH_LONG).show();
+//        }
     }
 
     public void playMusic(String music) {
-        if (ACService.getInstance().getAudioPlayer() != null) {
-            ACService.getInstance().getAudioPlayer().play(music);
-        } else {
-            Intent startMusicIntent = new Intent(context, AudioPlayerActivity.class);
-            startMusicIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startMusicIntent.putExtra(AudioPlayerActivity.STARTPLAYER_EXTRA_KEY, music);
-            ACService.getInstance().startActivity(startMusicIntent);
-        }
+//        if (ACService.getInstance().getAudioPlayer() != null) {
+            MusicsPlayer.getInstance(context).play(music);
+//        } else {
+//            Intent startMusicIntent = new Intent(context, AudioPlayerActivity.class);
+//            startMusicIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//            startMusicIntent.putExtra(AudioPlayerActivity.STARTPLAYER_EXTRA_KEY, music);
+//            ACService.getInstance().startActivity(startMusicIntent);
+//        }
     }
 
 

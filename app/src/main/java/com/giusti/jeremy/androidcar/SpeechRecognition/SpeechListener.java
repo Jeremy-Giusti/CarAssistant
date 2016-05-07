@@ -192,6 +192,7 @@ public class SpeechListener implements RecognitionListener {
         }
     }
 
+
     public void addListener(ISpeechResultListener listener) {
         if (!mListenerList.contains(listener)) {
             mListenerList.add(listener);
