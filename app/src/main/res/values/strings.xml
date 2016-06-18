@@ -21,6 +21,8 @@
     <string name="assistant_not_started">the assistant service is not started</string>
     <string name="command_failed">Command failed :</string>
     <string name="command_malformed">Command malformed</string>
+    <string name="no_cmd_found">No matching command found</string>
+
 
 
 </resources>

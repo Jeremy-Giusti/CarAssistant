@@ -10,7 +10,7 @@ import android.telephony.SmsManager;
 
 import com.giusti.jeremy.androidcar.R;
 import com.giusti.jeremy.androidcar.Service.ACService;
-import com.giusti.jeremy.androidcar.Service.IExcecutionResult;
+import com.giusti.jeremy.androidcar.Commands.ICommandExcecutionResult;
 
 /**
  * Created by jérémy on 01/05/2016.
@@ -21,7 +21,7 @@ public class MessageManager {
     private static final String SMS_RESULT = "sms result";
     private static MessageManager instance;
 
-    private IExcecutionResult resultListener;
+    private ICommandExcecutionResult resultListener;
 
     public static MessageManager getInstance() {
         if (instance == null) {
@@ -33,11 +33,11 @@ public class MessageManager {
     private MessageManager() {
     }
 
-    public IExcecutionResult getResultListener() {
+    public ICommandExcecutionResult getResultListener() {
         return resultListener;
     }
 
-    public void setResultListener(IExcecutionResult resultListener) {
+    public void setResultListener(ICommandExcecutionResult resultListener) {
         this.resultListener = resultListener;
     }
 
@@ -74,19 +74,19 @@ public class MessageManager {
                 switch (getResultCode()) {
 
                     case Activity.RESULT_OK:
-                        resultListener.onResult(IExcecutionResult.EResult.SUCCESS, commandKey, null);
+                        resultListener.onResult(ICommandExcecutionResult.EResult.SUCCESS, commandKey, null);
                         break;
                     case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
-                        resultListener.onResult(IExcecutionResult.EResult.FAIL, commandKey, "generic failure");
+                        resultListener.onResult(ICommandExcecutionResult.EResult.FAIL, commandKey, "generic failure");
                         break;
                     case SmsManager.RESULT_ERROR_RADIO_OFF:
-                        resultListener.onResult(IExcecutionResult.EResult.FAIL, commandKey, "radio off");
+                        resultListener.onResult(ICommandExcecutionResult.EResult.FAIL, commandKey, "radio off");
                         break;
                     case SmsManager.RESULT_ERROR_NULL_PDU:
-                        resultListener.onResult(IExcecutionResult.EResult.FAIL, commandKey, "null PDU");
+                        resultListener.onResult(ICommandExcecutionResult.EResult.FAIL, commandKey, "null PDU");
                         break;
                     case SmsManager.RESULT_ERROR_NO_SERVICE:
-                        resultListener.onResult(IExcecutionResult.EResult.FAIL, commandKey, "no service");
+                        resultListener.onResult(ICommandExcecutionResult.EResult.FAIL, commandKey, "no service");
                         break;
                 }
 

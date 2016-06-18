@@ -13,6 +13,7 @@ public class MusicIntentListenerService extends Service {
     private static MusicIntentListenerService instance;
 
     public static final String INTENT_REQUEST = "request";
+    public static final int INTENT_REQUEST_REMOVE = 199;
     public static final int INTENT_REQUEST_SHOW = 200;
     public static final int INTENT_REQUEST_PLAY = 201;
     public static final int INTENT_REQUEST_PAUSE = 202;
@@ -31,8 +32,8 @@ public class MusicIntentListenerService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if(instance==null){
-            instance=this;
+        if (instance == null) {
+            instance = this;
         }
 
         onNewIntent(intent);
@@ -44,6 +45,9 @@ public class MusicIntentListenerService extends Service {
         switch (request) {
             case INTENT_REQUEST_SHOW:
                 //? TODO ?
+                break;
+            case INTENT_REQUEST_REMOVE:
+                MusicsPlayer.getInstance(this).destroy();
                 break;
             case INTENT_REQUEST_PLAY:
                 MusicsPlayer.getInstance(this).start();

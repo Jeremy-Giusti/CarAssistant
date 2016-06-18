@@ -12,7 +12,6 @@ import com.giusti.jeremy.androidcar.Constants.Constants;
 import com.giusti.jeremy.androidcar.R;
 import com.giusti.jeremy.androidcar.ScreenOverlay.AlphaNumCoord;
 import com.giusti.jeremy.androidcar.ScreenOverlay.CoordinateConverter;
-import com.giusti.jeremy.androidcar.Service.IExcecutionResult;
 import com.giusti.jeremy.androidcar.Utils.ContactManager;
 
 import org.apache.commons.lang3.StringUtils;
@@ -27,7 +26,7 @@ public class CmdInterpretor {
 
     private static final String ALPHANUM_COORD_REGEX = "[a-z]\\d+";
     private static final String TAG = CmdInterpretor.class.getSimpleName();
-    private final IExcecutionResult commandResultListener;
+    private final ICommandExcecutionResult commandResultListener;
 
     private Context context;
 
@@ -81,7 +80,7 @@ public class CmdInterpretor {
     private boolean useTrigger = false;
 
 
-    public CmdInterpretor(Context context, IExcecutionResult commandResultListener,IMotionEventCmdListener... listeners) {
+    public CmdInterpretor(Context context, ICommandExcecutionResult commandResultListener, IMotionEventCmdListener... listeners) {
         this.context = context;
         this.commandResultListener = commandResultListener;
         if (listeners != null) {
@@ -90,9 +89,9 @@ public class CmdInterpretor {
             }
         }
 
-        trmCmdExec = new TerminalCmdExecutor();
-        apiCmdExec = new ApiCmdExecutor(context,commandResultListener);
-        appCmdExec = new AppCmdExecutor(context);
+        trmCmdExec = new TerminalCmdExecutor(commandResultListener);
+        apiCmdExec = new ApiCmdExecutor(context, commandResultListener);
+        appCmdExec = new AppCmdExecutor(context, commandResultListener);
 
         converter = new CoordinateConverter(context);
         mContactManager = new ContactManager(context);
@@ -107,13 +106,14 @@ public class CmdInterpretor {
     public boolean managePotentialCmdList(ArrayList<String> potentialCmdList) {
         for (String potentialCmd : potentialCmdList) {
             InterpretationResult cmdResult = interpreteCmd(potentialCmd);
-            if (cmdResult.equals(InterpretationResult.APPLIED)) {
-                Log.i(TAG, "Cmd successfuly executed: " + potentialCmd);
+            if (cmdResult.equals(InterpretationResult.APPLIED) || cmdResult.equals(InterpretationResult.EXECUTION_FAILED)) {
+                Log.i(TAG, "Cmd executed: " + potentialCmd + " : " + cmdResult);
                 return true;
             } else {
                 Log.i(TAG, "Cmd not executed: " + potentialCmd + "\n result: " + cmdResult);
             }
         }
+        commandResultListener.onResult(ICommandExcecutionResult.EResult.MALFORMED, R.string.cmd_malformed_key, R.string.no_cmd_found);
         return false;
     }
 
@@ -193,17 +193,17 @@ public class CmdInterpretor {
                     apiCmdExec.goHome();
                     result = InterpretationResult.APPLIED;
                 } else if (cmd.toLowerCase().matches(command_back)) {
-                    trmCmdExec.executeCommande("input keyevent 4", true);
+                    trmCmdExec.executeCommande("input keyevent 4", true, true);
                     result = InterpretationResult.APPLIED;
                 } else if (cmd.toLowerCase().matches(command_volume)) {
                     result = interpretVolumeCmd(cmd);
                 } else if (cmd.toLowerCase().matches(command_volume_up)) {
-                    trmCmdExec.executeCommande("input keyevent 24", true);
-                    trmCmdExec.executeCommande("input keyevent 24", true);
+                    trmCmdExec.executeCommande("input keyevent 24", true, true);
+                    trmCmdExec.executeCommande("input keyevent 24", true, true);
                     result = InterpretationResult.APPLIED;
                 } else if (cmd.toLowerCase().matches(command_volume_down)) {
-                    trmCmdExec.executeCommande("input keyevent 25", true);
-                    trmCmdExec.executeCommande("input keyevent 25", true);
+                    trmCmdExec.executeCommande("input keyevent 25", true, true);
+                    trmCmdExec.executeCommande("input keyevent 25", true, true);
                     result = InterpretationResult.APPLIED;
                 } else if (cmd.toLowerCase().matches(command_quit)) {
                     apiCmdExec.finishApp();
@@ -262,7 +262,7 @@ public class CmdInterpretor {
     private InterpretationResult interpetTouchCmd(String touchCmdStr) {
         Point touchCoord = getCoordPoint(touchCmdStr);
         if (touchCoord != null && touchCoord.x >= 0 && touchCoord.y >= 0) {
-            trmCmdExec.executeCommande("input tap " + touchCoord.x + " " + touchCoord.y, true);
+            trmCmdExec.executeCommande("input tap " + touchCoord.x + " " + touchCoord.y, true, true);
             notifityAllListener(Constants.EVENT_CLICK, touchCoord);
             return InterpretationResult.APPLIED;
         } else {
@@ -279,7 +279,7 @@ public class CmdInterpretor {
     private InterpretationResult interpetLongClickCmd(String longClickCmdStr) {
         Point touchCoord = getCoordPoint(longClickCmdStr);
         if (touchCoord != null && touchCoord.x >= 0 && touchCoord.y >= 0) {
-            trmCmdExec.executeCommande("input touchscreen swipe " + touchCoord.x + " " + touchCoord.y + " " + touchCoord.x + " " + touchCoord.y + " 1500", true);
+            trmCmdExec.executeCommande("input touchscreen swipe " + touchCoord.x + " " + touchCoord.y + " " + touchCoord.x + " " + touchCoord.y + " 1500", true, true);
             notifityAllListener(Constants.EVENT_LONGCLICK, touchCoord);
             return InterpretationResult.APPLIED;
         } else {
@@ -293,7 +293,7 @@ public class CmdInterpretor {
         Point touchCoord2 = touchCoordPair.second;
 
         if (touchCoord1 != null && touchCoord1.x >= 0 && touchCoord1.y >= 0 && touchCoord2 != null && touchCoord2.x >= 0 && touchCoord2.y >= 0) {
-            trmCmdExec.executeCommande("shell input touchscreen swipe " + touchCoord1.x + " " + touchCoord1.y + " " + touchCoord2.x + " " + touchCoord2.y + " 500", true);
+            trmCmdExec.executeCommande("shell input touchscreen swipe " + touchCoord1.x + " " + touchCoord1.y + " " + touchCoord2.x + " " + touchCoord2.y + " 500", true, true);
             notifityAllListener(Constants.EVENT_SWIPE, touchCoord1, touchCoord2);
             return InterpretationResult.APPLIED;
         } else {
@@ -314,7 +314,7 @@ public class CmdInterpretor {
         }
         if (!TextUtils.isEmpty(textToWrite)) {
             textToWrite = textToWrite.replace(" ", "%s");
-            trmCmdExec.executeCommande("shell input text " + textToWrite, true);
+            trmCmdExec.executeCommande("shell input text " + textToWrite, true, true);
             return InterpretationResult.APPLIED;
         } else {
             return InterpretationResult.UNINTERPRETED;
@@ -339,7 +339,7 @@ public class CmdInterpretor {
             for (int i = 0; i < nbDel; i++) {
                 cmdDelFinal += (" & " + cmdDel);
             }
-            trmCmdExec.executeCommande(cmdDelFinal, true);
+            trmCmdExec.executeCommande(cmdDelFinal, true, true);
             return InterpretationResult.APPLIED;
         } else {
             return InterpretationResult.UNINTERPRETED;

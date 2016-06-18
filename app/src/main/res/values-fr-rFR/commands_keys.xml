@@ -1,0 +1,20 @@
+<resources>
+    <string name="send_sms_key">Envois sms</string>
+    <string name="end_assistant_key">Fermeture assistant</string>
+    <string name="set_volume_key">Changement volume </string>
+    <string name="set_speaker_key">Changement haut parleur</string>
+    <string name="grid_show_key">Affichage grille</string>
+    <string name="call_key">Appel</string>
+    <string name="end_call_key">Fin d\'appel</string>
+    <string name="go_home_key">Retour accueuil</string>
+    <string name="cmd_malformed_key">Commande malformée</string>
+    <string name="trmnl_cmd_key">Command terminal</string>
+    <string name="open_cmd_list_key">Overture list commande</string>
+    <string name="open_stg_key">Ouverture paramètres</string>
+    <string name="play_music_key">Jous musique</string>
+    <string name="pause_music_key">Pause musique</string>
+    <string name="stop_music_key">Stop musique</string>
+    <string name="next_music_key">Suivante musique</string>
+    <string name="prev_music_key">Precedente musique</string>
+
+</resources>

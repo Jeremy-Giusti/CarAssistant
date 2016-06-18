@@ -53,6 +53,9 @@ public class SpeechListener implements RecognitionListener {
             intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
             //      intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,"voice.recognition.test");
             intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 5);
+//            intent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS, 5000);
+//            intent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, 5000);
+
             mSpeechRecognizer.startListening(intent);
             isRestarting = true;
             restartNumber = numberOfTry;
@@ -126,7 +129,8 @@ public class SpeechListener implements RecognitionListener {
 //                break;
 //                    }
 
-        Toast.makeText(mContext, "error : " + error, Toast.LENGTH_SHORT).show();
+        //      Toast.makeText(mContext, "error : " + error, Toast.LENGTH_SHORT).show();
+        Log.w(TAG, "error speech recognition" + error);
         if (error != 8 && error != 9) {
             restartListen();
         }

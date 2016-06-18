@@ -2,6 +2,8 @@ package com.giusti.jeremy.androidcar.Commands;
 
 import android.text.TextUtils;
 
+import com.giusti.jeremy.androidcar.R;
+
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -14,14 +16,19 @@ import java.io.InputStreamReader;
  */
 public class TerminalCmdExecutor {
 
+    private final ICommandExcecutionResult resultListener;
     DataOutputStream shellInput;
     BufferedReader shellOutput;
     Process process = null;
     private String cmdPrefix = "";
 
+    public TerminalCmdExecutor(ICommandExcecutionResult commandResultListener) {
+        this.resultListener = commandResultListener;
+    }
+
     public void connect() {
         cmdPrefix = "";
-        String devices = executeCommande("adb devices", false).trim();
+        String devices = executeCommande("adb devices", false, false).trim();
         String[] linesDevice = devices.split("\r\n|\r|\n");
         if (linesDevice.length > 1 && !TextUtils.isEmpty(linesDevice[1])) {
             for (int i = 1; i < linesDevice.length; i++) {
@@ -32,12 +39,12 @@ public class TerminalCmdExecutor {
             }
         }
         if (TextUtils.isEmpty(cmdPrefix)) {
-            executeCommande("adb connect 127.0.0.1", false);
+            executeCommande("adb connect 127.0.0.1", false, false);
             cmdPrefix = "adb shell ";
         }
     }
 
-    public String executeCommande(String commande, boolean imediateResult) {
+    public String executeCommande(String commande, boolean imediateResult, boolean sendResult) {
         String constuctedCmd = cmdPrefix + commande;
         try {
             process = Runtime.getRuntime().exec(constuctedCmd + "\n");
@@ -56,11 +63,15 @@ public class TerminalCmdExecutor {
 
                 //process.destroy();
                 shellOutput.close();
+                if (sendResult)
+                    resultListener.onResult(ICommandExcecutionResult.EResult.SUCCESS, R.string.trmnl_cmd_key, null);
                 return total.toString();
             }
         } catch (IOException e) {
             e.printStackTrace();
             closeConnection();
+            if (sendResult)
+                resultListener.onResult(ICommandExcecutionResult.EResult.FAIL, R.string.trmnl_cmd_key, "failed to use the terminal");
         }
         return "";
     }

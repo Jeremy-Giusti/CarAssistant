@@ -56,11 +56,15 @@ public class AcNotifications {
         Intent intent = new Intent(context, AudioPlayerActivity.class);
         PendingIntent showIntent = PendingIntent.getActivity(context, MusicIntentListenerService.INTENT_REQUEST_SHOW, intent, 0);
 
+        Intent removeIntent = new Intent(context, ACService.class);
+        PendingIntent removePendingIntent = PendingIntent.getService(context, MusicIntentListenerService.INTENT_REQUEST_REMOVE, intent, 0);
+
         String duration = Utils.getDisplayableTime(music.getDuration());
         builder.setSmallIcon(R.drawable.ic_music_player)
                 .setContentTitle(music.getTitle())
                 .setContentText(String.valueOf(duration))
                 .setContentIntent(showIntent)
+                .setDeleteIntent(removePendingIntent)
                 .addAction(getMusicPrevAction(context))
                 .addAction(getMusicPlayPauseAction(context, !playing))
                 .addAction(getMusicNextAction(context)).build();

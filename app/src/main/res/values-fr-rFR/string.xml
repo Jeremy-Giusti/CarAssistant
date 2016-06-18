@@ -36,7 +36,7 @@
 
     <string name="command_play_music">.*?(lance|jous|joue).*?(musique|chanson).*?</string>
     <string name="command_pause_music">.*?(pause).*?(musique|chanson).*?</string>
-    <string name="command_stop_music">.*?(arrète|stop|quite).*?(musique|chanson).*?</string>
+    <string name="command_stop_music">.*?(arrête|stop|quite).*?(musique|chanson).*?</string>
     <string name="command_next_music">.*?(musique|chanson)\\s(suivante).*?</string>
     <string name="command_previous_music">.*?(musique|chanson)\\s(précédente).*?</string>
 

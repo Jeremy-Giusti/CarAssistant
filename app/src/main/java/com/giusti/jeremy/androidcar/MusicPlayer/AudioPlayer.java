@@ -23,13 +23,13 @@ public class AudioPlayer {
     }
 
     public AudioPlayer(int streamType) {
-        mediaPlayer = new MediaPlayer();
+        this();
         this.streamType = streamType;
         mediaPlayer.setAudioStreamType(streamType);
     }
 
     public AudioPlayer(IAudioPlayerListener listener) {
-        new AudioPlayer();
+        this();
         this.listener = listener;
         mediaPlayer.setOnCompletionListener(completionListener);
         mediaPostionUpdaterHandler.postDelayed(updateMediaPositionRunnable, UPDATE_FREQUENCY_MILLISEC);

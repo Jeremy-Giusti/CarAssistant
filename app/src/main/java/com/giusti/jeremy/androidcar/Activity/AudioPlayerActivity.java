@@ -1,13 +1,13 @@
 package com.giusti.jeremy.androidcar.Activity;
 
-import android.app.NotificationManager;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
@@ -18,8 +18,6 @@ import com.giusti.jeremy.androidcar.MusicPlayer.MusicFile;
 import com.giusti.jeremy.androidcar.MusicPlayer.MusicListAdapter;
 import com.giusti.jeremy.androidcar.MusicPlayer.MusicsPlayer;
 import com.giusti.jeremy.androidcar.R;
-import com.giusti.jeremy.androidcar.Service.ACService;
-import com.giusti.jeremy.androidcar.UI.AcNotifications;
 import com.giusti.jeremy.androidcar.Utils.Utils;
 
 import java.util.ArrayList;
@@ -32,8 +30,6 @@ import java.util.ArrayList;
 public class AudioPlayerActivity extends AppCompatActivity implements MusicListAdapter.IItemEventListener, IMusicsPlayerEventListener {
     public static final String STARTPLAYER_EXTRA_KEY = "startPlayer";
     public static final String PLAY_ANYTHING = "play anything";
-
-
 
 
     private RecyclerView mMusics_rv;
@@ -53,10 +49,31 @@ public class AudioPlayerActivity extends AppCompatActivity implements MusicListA
 
         mMusicPlayer = MusicsPlayer.getInstance(this);
         mMusicPlayer.addListener(this);
-        if(mMusicPlayer.isPlaying()) mPlayButton.setSelected(true);
+        if (mMusicPlayer.isPlaying()) mPlayButton.setSelected(true);
 
         manageExtra();
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu items for use in the action bar
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.cmdlist_activity_action, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle presses on the action bar items
+        switch (item.getItemId()) {
+            case R.id.action_close:
+                mMusicPlayer.destroy();
+                this.finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
 
@@ -174,7 +191,7 @@ public class AudioPlayerActivity extends AppCompatActivity implements MusicListA
     @Override
     protected void onDestroy() {
         mMusicPlayer.removeListener(this);
-       // mMusicPlayer.destroy();//keep it ? destroy musicsplayer if no listener ?
+        // mMusicPlayer.destroy();//keep it ? destroy musicsplayer if no listener ?
 
         super.onDestroy();
     }

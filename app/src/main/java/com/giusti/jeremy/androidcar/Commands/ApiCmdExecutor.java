@@ -16,10 +16,8 @@ import android.widget.Toast;
 import com.giusti.jeremy.androidcar.Constants.ACPreference;
 import com.giusti.jeremy.androidcar.R;
 import com.giusti.jeremy.androidcar.Service.ACService;
-import com.giusti.jeremy.androidcar.Service.IExcecutionResult;
 import com.giusti.jeremy.androidcar.Utils.MessageManager;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
 /**
@@ -31,12 +29,12 @@ public class ApiCmdExecutor {
 
     private static final String TAG = ApiCmdExecutor.class.getSimpleName();
     private Context context;
-    private IExcecutionResult resultListener;
+    private ICommandExcecutionResult resultListener;
 
 
-    public ApiCmdExecutor(Context context,IExcecutionResult resultListener) {
+    public ApiCmdExecutor(Context context, ICommandExcecutionResult resultListener) {
         this.context = context;
-        this.resultListener =resultListener;
+        this.resultListener = resultListener;
     }
 
     /**
@@ -46,6 +44,7 @@ public class ApiCmdExecutor {
      */
     public void finishApp() {
         if (ACService.getInstance() != null) {
+            resultListener.onResult(ICommandExcecutionResult.EResult.SUCCESS, R.string.end_assistant_key, null);
             context.stopService(new Intent(context, ACService.class));
         }
     }
@@ -58,6 +57,8 @@ public class ApiCmdExecutor {
                 AudioManager.STREAM_MUSIC,
                 (int) ((am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)) * (volume / 10.0)),
                 0);
+        resultListener.onResult(ICommandExcecutionResult.EResult.SUCCESS, R.string.set_volume_key, null);
+
     }
 
     public void setCallVolume(int volume) {
@@ -68,6 +69,7 @@ public class ApiCmdExecutor {
                 AudioManager.STREAM_VOICE_CALL,
                 (int) ((am.getStreamMaxVolume(AudioManager.STREAM_MUSIC)) * (volume / 10.0)),
                 0);
+        resultListener.onResult(ICommandExcecutionResult.EResult.SUCCESS, R.string.set_volume_key, null);
     }
 
     public void setSpeaker(boolean on) {
@@ -75,36 +77,37 @@ public class ApiCmdExecutor {
                 (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
 
         am.setSpeakerphoneOn(on);
+        resultListener.onResult(ICommandExcecutionResult.EResult.SUCCESS, R.string.set_speaker_key, null);
+
     }
 
 
     public void showGridOnOverlay(boolean show) {
         ACPreference.setShowGrid(context, show);
+        resultListener.onResult(ICommandExcecutionResult.EResult.SUCCESS, R.string.grid_show_key, null);
+
     }
 
     public boolean call(String number) {
 
-        try {
-            Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + number));
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+        Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + number));
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
 
-                Toast.makeText(context, R.string.call_forbiden, Toast.LENGTH_SHORT).show();
-                return false;
-            }
-            context.startActivity(intent);
-
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    setCallVolume(10);
-                    setSpeaker(true);
-                }
-            }, 1000);
-        } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
+            Toast.makeText(context, R.string.call_forbiden, Toast.LENGTH_SHORT).show();
             return false;
         }
+        context.startActivity(intent);
+        resultListener.onResult(ICommandExcecutionResult.EResult.SUCCESS, R.string.call_key, null);
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                setCallVolume(10);
+                setSpeaker(true);
+            }
+        }, 1000);
+
         return true;
     }
 
@@ -119,17 +122,9 @@ public class ApiCmdExecutor {
             Class telephonyClass;
             Class telephonyStubClass;
             Class serviceManagerClass;
-            Class serviceManagerStubClass;
             Class serviceManagerNativeClass;
-            Class serviceManagerNativeStubClass;
 
-            Method telephonyCall;
             Method telephonyEndCall;
-            Method telephonyAnswerCall;
-            Method getDefault;
-
-            Method[] temps;
-            Constructor[] serviceManagerConstructor;
 
             // Method getService;
             Object telephonyObject;
@@ -159,25 +154,22 @@ public class ApiCmdExecutor {
             //telephonyAnswerCall = telephonyClass.getMethod("answerRingingCall");
 
             telephonyEndCall.invoke(telephonyObject);
+            resultListener.onResult(ICommandExcecutionResult.EResult.SUCCESS, R.string.end_call_key, null);
 
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(TAG,
                     "FATAL ERROR: could not connect to telephony subsystem");
             Log.e(TAG, "Exception object: " + e);
+            resultListener.onResult(ICommandExcecutionResult.EResult.MALFORMED, R.string.end_call_key, "could not connect to telephony subsystem");
             return false;
         }
         return true;
     }
 
     public boolean sendTo(String number, String message) {
-        try {
-            MessageManager.getInstance().setResultListener(resultListener);
-            MessageManager.getInstance().sendSms(number, message);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+        MessageManager.getInstance().setResultListener(resultListener);
+        MessageManager.getInstance().sendSms(number, message);
         return true;
     }
 
@@ -187,5 +179,6 @@ public class ApiCmdExecutor {
         startMain.addCategory(Intent.CATEGORY_HOME);
         startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(startMain);
+        resultListener.onResult(ICommandExcecutionResult.EResult.SUCCESS, R.string.go_home_key, null);
     }
 }

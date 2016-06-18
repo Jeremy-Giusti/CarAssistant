@@ -9,12 +9,16 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.PixelFormat;
+import android.hardware.Sensor;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.WindowManager;
@@ -23,6 +27,8 @@ import android.widget.Toast;
 
 import com.giusti.jeremy.androidcar.Commands.AppCmdExecutor;
 import com.giusti.jeremy.androidcar.Commands.CmdInterpretor;
+import com.giusti.jeremy.androidcar.Commands.EmptyCommandResultListenerCommand;
+import com.giusti.jeremy.androidcar.Commands.ICommandExcecutionResult;
 import com.giusti.jeremy.androidcar.Constants.ACPreference;
 import com.giusti.jeremy.androidcar.Constants.ISettingChangeListener;
 import com.giusti.jeremy.androidcar.MusicPlayer.AudioPlayer;
@@ -33,6 +39,7 @@ import com.giusti.jeremy.androidcar.ScreenOverlay.ScreenMapper;
 import com.giusti.jeremy.androidcar.SpeechRecognition.ISpeechResultListener;
 import com.giusti.jeremy.androidcar.SpeechRecognition.SpeechListener;
 import com.giusti.jeremy.androidcar.UI.AcNotifications;
+import com.giusti.jeremy.androidcar.Utils.LongProximityEventListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -43,7 +50,7 @@ import java.util.HashMap;
  * service that run on background will show a persistant notification if activated
  * May show the grid if asked
  */
-public class ACService extends Service implements ISpeechResultListener, ISettingChangeListener, IFloatingButtonClickListener, IExcecutionResult {
+public class ACService extends Service implements ISpeechResultListener, ISettingChangeListener, IFloatingButtonClickListener, ICommandExcecutionResult, LongProximityEventListener.IProximityEventListener {
 
     private static final String TAG = ACService.class.getSimpleName();
 
@@ -88,7 +95,7 @@ public class ACService extends Service implements ISpeechResultListener, ISettin
         super.onCreate();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
             Toast.makeText(this, R.string.overlay_forbiden, Toast.LENGTH_SHORT).show();
-            new AppCmdExecutor(this).openSettingActivity();
+            new AppCmdExecutor(this, new EmptyCommandResultListenerCommand()).openSettingActivity();
             this.stopSelf();
             return;
         }
@@ -99,8 +106,10 @@ public class ACService extends Service implements ISpeechResultListener, ISettin
         cmdInterpretor = new CmdInterpretor(this, this, mScreenMapper);
         speechListener = new SpeechListener(this, this);
         ACPreference.addListener(this);
+        initProximitySensorDetection();
         instance = this;
     }
+
 
     public void displayNotification(Notification notif) {
         startForeground(AcNotifications.AC_NOTIF_ID, notif);
@@ -237,6 +246,31 @@ public class ACService extends Service implements ISpeechResultListener, ISettin
         stopService(new Intent(this, ACService.class));
     }
 
+    // ------------------------ PROXIMITY sensor events--------------------------
+
+    private void initProximitySensorDetection() {
+        SensorManager mySensorManager = (SensorManager) getSystemService(
+                Context.SENSOR_SERVICE);
+        Sensor myProximitySensor = mySensorManager.getDefaultSensor(
+                Sensor.TYPE_PROXIMITY);
+        if (myProximitySensor != null) {
+            mySensorManager.registerListener(proximitySensorEventListener,
+                    myProximitySensor,
+                    SensorManager.SENSOR_DELAY_NORMAL);
+        }
+    }
+
+    SensorEventListener proximitySensorEventListener
+            = new LongProximityEventListener(this);
+
+    @Override
+    public void onProximityEvent() {
+        if (!speechListener.isShouldBeListening()) {
+            speechListener.setListeningSpeech(true, SpeechListener.DEFAULT_RETRY_NUMBER);
+        }
+    }
+
+
     //--------------------- RESULT LISTENING ----------------
 
     @Override
@@ -258,15 +292,17 @@ public class ACService extends Service implements ISpeechResultListener, ISettin
         try {
             switch (result) {
                 case SUCCESS:
-                    Toast.makeText(this, detail, Toast.LENGTH_LONG).show();
+                    if (!TextUtils.isEmpty(detail)) {
+                        Toast.makeText(this, detail, Toast.LENGTH_LONG).show();
+                    }
                     audioPlayer.start(this, R.raw.success);
                     break;
                 case FAIL:
-                    Toast.makeText(this, getString(R.string.command_failed) + key + " " + detail, Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, getString(R.string.command_failed) + key + "\n" + detail, Toast.LENGTH_LONG).show();
                     audioPlayer.start(this, R.raw.failed);
                     break;
                 case MALFORMED:
-                    Toast.makeText(this, getString(R.string.command_malformed) + key + " " + detail, Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, /*getString(R.string.command_malformed)*/"" + key + "\n" + detail, Toast.LENGTH_LONG).show();
                     audioPlayer.start(this, R.raw.error);
                     break;
             }
@@ -340,5 +376,6 @@ public class ACService extends Service implements ISpeechResultListener, ISettin
         audioPlayer.destroy();
         instance = null;
     }
+
 
 }

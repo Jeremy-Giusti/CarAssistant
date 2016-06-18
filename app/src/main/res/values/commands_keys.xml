@@ -1,4 +1,21 @@
 <resources>
     <string name="send_sms_key">Sending sms</string>
+    <string name="end_assistant_key">Assistant ending</string>
+    <string name="set_volume_key">setting volume </string>
+    <string name="set_speaker_key">setting speaker </string>
+    <string name="grid_show_key">displaying Grid</string>
+    <string name="call_key">calling</string>
+    <string name="end_call_key">call ending</string>
+    <string name="go_home_key">going home</string>
+    <string name="cmd_malformed_key">Command malformed</string>
+    <string name="trmnl_cmd_key">terminal command</string>
+    <string name="open_cmd_list_key">Opening cmd list</string>
+    <string name="open_stg_key">Opening settings</string>
+    <string name="change_music_state_key">Music player command</string>
+    <string name="play_music_key">playing music</string>
+    <string name="pause_music_key">Pausing music</string>
+    <string name="stop_music_key">Stopping music</string>
+    <string name="next_music_key">Next music</string>
+    <string name="prev_music_key">Previous music</string>
 
 </resources>

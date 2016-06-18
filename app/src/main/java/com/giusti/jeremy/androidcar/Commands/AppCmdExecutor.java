@@ -3,14 +3,11 @@ package com.giusti.jeremy.androidcar.Commands;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Toast;
 
 import com.giusti.jeremy.androidcar.Activity.CommandsListActivity;
-import com.giusti.jeremy.androidcar.Activity.AudioPlayerActivity;
 import com.giusti.jeremy.androidcar.Activity.SettingActivity;
 import com.giusti.jeremy.androidcar.MusicPlayer.MusicsPlayer;
 import com.giusti.jeremy.androidcar.R;
-import com.giusti.jeremy.androidcar.Service.ACService;
 
 /**
  * Created by jérémy on 05/05/2016.
@@ -18,11 +15,13 @@ import com.giusti.jeremy.androidcar.Service.ACService;
  * <br> see also {@link ApiCmdExecutor} and {@link TerminalCmdExecutor}
  */
 public class AppCmdExecutor {
+    private final ICommandExcecutionResult resultListener;
     private Context context;
 
 
-    public AppCmdExecutor(Context context) {
+    public AppCmdExecutor(Context context, ICommandExcecutionResult commandResultListener) {
         this.context = context;
+        this.resultListener = commandResultListener;
     }
 
 
@@ -33,52 +32,47 @@ public class AppCmdExecutor {
         b.putStringArray(CommandsListActivity.COMMAND_LIST_STR, strings);
         intent.putExtras(b);
         context.startActivity(intent);
+        resultListener.onResult(ICommandExcecutionResult.EResult.SUCCESS, R.string.open_cmd_list_key, null);
     }
 
     public void openSettingActivity() {
         Intent intent = new Intent(context, SettingActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
+        resultListener.onResult(ICommandExcecutionResult.EResult.SUCCESS, R.string.open_stg_key, null);
     }
 
     public void changeMusicState(MusicState requestedState) {
-//        if (ACService.getInstance().getAudioPlayer() != null) {
-            switch (requestedState) {
-                case PLAY:
-                    MusicsPlayer.getInstance(context).start();
-                    break;
-                case PAUSE:
-                    MusicsPlayer.getInstance(context).pause();
-                    break;
-                case STOP:
-                    MusicsPlayer.getInstance(context).stop();
-                    break;
-                case NEXT:
-                    MusicsPlayer.getInstance(context).next();
-                    break;
-                case PREVIOUS:
-                    MusicsPlayer.getInstance(context).previous();
-                    break;
-            }
-//        } else if (requestedState == MusicState.PLAY) {
-//            Intent startMusicIntent = new Intent(context, AudioPlayerActivity.class);
-//            startMusicIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//            startMusicIntent.putExtra(AudioPlayerActivity.STARTPLAYER_EXTRA_KEY, AudioPlayerActivity.PLAY_ANYTHING);
-//            ACService.getInstance().startActivity(startMusicIntent);
-//        } else {
-//            Toast.makeText(context, R.string.music_player_off, Toast.LENGTH_LONG).show();
-//        }
+        int key = 0;
+        switch (requestedState) {
+            case PLAY:
+                key = R.string.play_music_key;
+                MusicsPlayer.getInstance(context).start();
+                break;
+            case PAUSE:
+                key = R.string.pause_music_key;
+                MusicsPlayer.getInstance(context).pause();
+                break;
+            case STOP:
+                key = R.string.stop_music_key;
+                MusicsPlayer.getInstance(context).stop();
+                break;
+            case NEXT:
+                key = R.string.next_music_key;
+                MusicsPlayer.getInstance(context).next();
+                break;
+            case PREVIOUS:
+                key = R.string.prev_music_key;
+                MusicsPlayer.getInstance(context).previous();
+                break;
+        }
+        resultListener.onResult(ICommandExcecutionResult.EResult.SUCCESS, key, null);
+
     }
 
     public void playMusic(String music) {
-//        if (ACService.getInstance().getAudioPlayer() != null) {
-            MusicsPlayer.getInstance(context).play(music);
-//        } else {
-//            Intent startMusicIntent = new Intent(context, AudioPlayerActivity.class);
-//            startMusicIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//            startMusicIntent.putExtra(AudioPlayerActivity.STARTPLAYER_EXTRA_KEY, music);
-//            ACService.getInstance().startActivity(startMusicIntent);
-//        }
+        MusicsPlayer.getInstance(context).play(music);
+        resultListener.onResult(ICommandExcecutionResult.EResult.SUCCESS, R.string.play_music_key, null);
     }
 
 

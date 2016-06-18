@@ -1,19 +1,22 @@
 TODO:
 
-Commandes ---------------------------------------------------
+APPLi ---------------------------------------------------
 
-1- retour audio
-1- capter proximité
+
 1- pebble compatibility
+2- CMD deverouillage ecran ?
 3- lectur sms/mail
 3- meilleur recherche de contact pour appel et sms
+3- retour audio stream type configurable
+3- proximity sensor timer configurable
+3- proximity sensor disablable
 
 
 
 Lecteur audio -------------------------------------------------
 
 
-2- ouvre/lance (l'application de) music
+2- CMD ouvre/lance (l'application de) music
 3- order playlist par order alphabetique | use hashmap for all song list
 3- music list draggable etc
 
