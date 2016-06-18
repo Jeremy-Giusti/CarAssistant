@@ -12,6 +12,7 @@ import com.giusti.jeremy.androidcar.Constants.Constants;
 import com.giusti.jeremy.androidcar.R;
 import com.giusti.jeremy.androidcar.ScreenOverlay.AlphaNumCoord;
 import com.giusti.jeremy.androidcar.ScreenOverlay.CoordinateConverter;
+import com.giusti.jeremy.androidcar.Service.IExcecutionResult;
 import com.giusti.jeremy.androidcar.Utils.ContactManager;
 
 import org.apache.commons.lang3.StringUtils;
@@ -26,6 +27,7 @@ public class CmdInterpretor {
 
     private static final String ALPHANUM_COORD_REGEX = "[a-z]\\d+";
     private static final String TAG = CmdInterpretor.class.getSimpleName();
+    private final IExcecutionResult commandResultListener;
 
     private Context context;
 
@@ -79,9 +81,9 @@ public class CmdInterpretor {
     private boolean useTrigger = false;
 
 
-    public CmdInterpretor(Context context, IMotionEventCmdListener... listeners) {
+    public CmdInterpretor(Context context, IExcecutionResult commandResultListener,IMotionEventCmdListener... listeners) {
         this.context = context;
-
+        this.commandResultListener = commandResultListener;
         if (listeners != null) {
             for (IMotionEventCmdListener listener : listeners) {
                 this.listenerList.add(listener);
@@ -89,7 +91,7 @@ public class CmdInterpretor {
         }
 
         trmCmdExec = new TerminalCmdExecutor();
-        apiCmdExec = new ApiCmdExecutor(context);
+        apiCmdExec = new ApiCmdExecutor(context,commandResultListener);
         appCmdExec = new AppCmdExecutor(context);
 
         converter = new CoordinateConverter(context);

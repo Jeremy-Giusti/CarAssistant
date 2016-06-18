@@ -272,4 +272,14 @@ public class SettingActivity extends AppCompatActivity implements ActivityCompat
         Intent openMusicActivity = new Intent(this, AudioPlayerActivity.class);
         startActivity(openMusicActivity);
     }
+
+    public void onClickWriteCommand(View v) {
+        if (ACService.getInstance() != null) {
+            ACService.getInstance().showWriteCommandDialog();
+        } else {
+            Toast.makeText(this, R.string.assistant_not_started, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
 }

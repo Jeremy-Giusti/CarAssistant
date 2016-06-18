@@ -17,6 +17,10 @@
     <string name="open_music_player">open music player</string>
     <string name="music_player_off">Music player isn\'t started</string>
     <string name="error_seeking">An error happened while trying to change postion on music</string>
+    <string name="write_a_command">write a command</string>
+    <string name="assistant_not_started">the assistant service is not started</string>
+    <string name="command_failed">Command failed :</string>
+    <string name="command_malformed">Command malformed</string>
 
 
 </resources>

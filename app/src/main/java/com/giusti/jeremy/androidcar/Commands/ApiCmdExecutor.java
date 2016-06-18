@@ -7,18 +7,16 @@ import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Binder;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.giusti.jeremy.androidcar.Activity.CommandsListActivity;
-import com.giusti.jeremy.androidcar.Activity.SettingActivity;
 import com.giusti.jeremy.androidcar.Constants.ACPreference;
 import com.giusti.jeremy.androidcar.R;
 import com.giusti.jeremy.androidcar.Service.ACService;
+import com.giusti.jeremy.androidcar.Service.IExcecutionResult;
 import com.giusti.jeremy.androidcar.Utils.MessageManager;
 
 import java.lang.reflect.Constructor;
@@ -33,10 +31,12 @@ public class ApiCmdExecutor {
 
     private static final String TAG = ApiCmdExecutor.class.getSimpleName();
     private Context context;
+    private IExcecutionResult resultListener;
 
 
-    public ApiCmdExecutor(Context context) {
+    public ApiCmdExecutor(Context context,IExcecutionResult resultListener) {
         this.context = context;
+        this.resultListener =resultListener;
     }
 
     /**
@@ -76,9 +76,6 @@ public class ApiCmdExecutor {
 
         am.setSpeakerphoneOn(on);
     }
-
-
-
 
 
     public void showGridOnOverlay(boolean show) {
@@ -174,9 +171,10 @@ public class ApiCmdExecutor {
     }
 
     public boolean sendTo(String number, String message) {
-        try{
-            MessageManager.getInstance().sendSms(number,message);
-        }catch (Exception e){
+        try {
+            MessageManager.getInstance().setResultListener(resultListener);
+            MessageManager.getInstance().sendSms(number, message);
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }

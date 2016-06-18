@@ -18,11 +18,10 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/white"
-            android:text="@string/open_music_player"
             android:drawableLeft="@drawable/ic_music_player_small"
             android:onClick="clickOpenMusicPlayer"
-            />
+            android:text="@string/open_music_player"
+            android:textColor="@android:color/white" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -84,11 +83,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            android:textColor="@android:color/black"
             android:layout_marginTop="10dp"
             android:background="@drawable/setting_clickable_background"
             android:checked="false"
-            android:text="@string/use_trigger" />
+            android:text="@string/use_trigger"
+            android:textColor="@android:color/black" />
 
 
         <LinearLayout
@@ -124,24 +123,29 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            android:textColor="@android:color/black"
             android:layout_marginTop="10dp"
             android:background="@drawable/setting_clickable_background"
             android:checked="false"
-            android:text="@string/setting_show_grid" />
+            android:text="@string/setting_show_grid"
+            android:textColor="@android:color/black" />
 
         <Switch
             android:id="@+id/auto_close_switch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            android:textColor="@android:color/black"
             android:layout_marginTop="10dp"
             android:background="@drawable/setting_clickable_background"
             android:checked="false"
-            android:text="@string/setting_auto_close_app" />
+            android:text="@string/setting_auto_close_app"
+            android:textColor="@android:color/black" />
 
-
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@android:drawable/ic_menu_edit"
+            android:onClick="onClickWriteCommand"
+            android:text="@string/write_a_command" />
 
     </LinearLayout>
 

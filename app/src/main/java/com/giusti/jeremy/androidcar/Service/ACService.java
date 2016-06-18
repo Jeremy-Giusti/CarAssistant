@@ -1,25 +1,31 @@
 package com.giusti.jeremy.androidcar.Service;
 
+import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.PixelFormat;
+import android.media.AudioManager;
 import android.os.Build;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.giusti.jeremy.androidcar.Commands.AppCmdExecutor;
 import com.giusti.jeremy.androidcar.Commands.CmdInterpretor;
 import com.giusti.jeremy.androidcar.Constants.ACPreference;
 import com.giusti.jeremy.androidcar.Constants.ISettingChangeListener;
+import com.giusti.jeremy.androidcar.MusicPlayer.AudioPlayer;
 import com.giusti.jeremy.androidcar.MusicPlayer.MusicsPlayer;
 import com.giusti.jeremy.androidcar.R;
 import com.giusti.jeremy.androidcar.ScreenOverlay.CmdButton;
@@ -28,25 +34,34 @@ import com.giusti.jeremy.androidcar.SpeechRecognition.ISpeechResultListener;
 import com.giusti.jeremy.androidcar.SpeechRecognition.SpeechListener;
 import com.giusti.jeremy.androidcar.UI.AcNotifications;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by jgiusti on 19/10/2015.
  * service that run on background will show a persistant notification if activated
  * May show the grid if asked
  */
-public class ACService extends Service implements ISpeechResultListener, ISettingChangeListener, IFloatingButtonClickListener {
+public class ACService extends Service implements ISpeechResultListener, ISettingChangeListener, IFloatingButtonClickListener, IExcecutionResult {
 
     private static final String TAG = ACService.class.getSimpleName();
+
+    private static final String ORIENTATION_CHANGE = "orientation change";
+
     private static ACService instance = null;
     private ScreenMapper mScreenMapper;
     private CmdButton mCmdButton;
-    private static final int CANCEL_SERVICE = 5345;
     private static final String BCAST_CONFIGCHANGED = "android.intent.action.CONFIGURATION_CHANGED";
     private CmdInterpretor cmdInterpretor;
     private SpeechListener speechListener;
 
-    private boolean mAudioPlayerPaused = false;
+    private HashMap<String, BroadcastReceiver> broadcastList = new HashMap<>();
+
+    private boolean mMusicPlayerPaused = false;
+
+    private AudioPlayer audioPlayer = new AudioPlayer(AudioManager.STREAM_NOTIFICATION);
+
 
     /**
      * may be null
@@ -81,7 +96,7 @@ public class ACService extends Service implements ISpeechResultListener, ISettin
         displayGridOverlay();
         displayNotification(AcNotifications.getDefaultNotification(this));
         startOrientationChangeListener();
-        cmdInterpretor = new CmdInterpretor(this, mScreenMapper);
+        cmdInterpretor = new CmdInterpretor(this, this, mScreenMapper);
         speechListener = new SpeechListener(this, this);
         ACPreference.addListener(this);
         instance = this;
@@ -91,13 +106,16 @@ public class ACService extends Service implements ISpeechResultListener, ISettin
         startForeground(AcNotifications.AC_NOTIF_ID, notif);
     }
 
+    //-------------------------------------------------- OVERLAYS --------------------------------------
+
+
     /**
      * listen to screen orientation change to re display the grid if needed
      */
     private void startOrientationChangeListener() {
         IntentFilter filter = new IntentFilter();
         filter.addAction(BCAST_CONFIGCHANGED);
-        this.registerReceiver(mBroadcastReceiver, filter);
+        registerBroadcast(ORIENTATION_CHANGE, mBroadcastReceiver, filter);
     }
 
 
@@ -131,6 +149,20 @@ public class ACService extends Service implements ISpeechResultListener, ISettin
     }
 
 
+    public BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent myIntent) {
+
+            if (myIntent.getAction().equals(BCAST_CONFIGCHANGED)) {
+                Log.d(TAG, "received->" + BCAST_CONFIGCHANGED);
+                cmdInterpretor.removeListener(mScreenMapper);
+                displayGridOverlay();
+            }
+        }
+    };
+
+    //-------------------------------------------------- speech listening --------------------------------------
+
     /**
      * @param potentialCmdList
      */
@@ -161,52 +193,20 @@ public class ACService extends Service implements ISpeechResultListener, ISettin
     public void onStartListening() {
         if (MusicsPlayer.getInstance(this).isPlaying()) {
             MusicsPlayer.getInstance(this).pause();
-            mAudioPlayerPaused = true;
+            mMusicPlayerPaused = true;
         }
     }
 
     @Override
     public void onStopListening() {
-        if (mAudioPlayerPaused) {
+        if (mMusicPlayerPaused) {
             MusicsPlayer.getInstance(this).start();
-            mAudioPlayerPaused = false;
+            mMusicPlayerPaused = false;
         }
     }
 
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        cmdInterpretor.endAllConnections();
-        cmdInterpretor.removeListener(mScreenMapper);
-        if (mScreenMapper != null) {
-            ((WindowManager) getSystemService(WINDOW_SERVICE)).removeView(mScreenMapper);
-            mScreenMapper = null;
-        }
-
-        if (mCmdButton != null) {
-            ((WindowManager) getSystemService(WINDOW_SERVICE)).removeView(mCmdButton);
-            mCmdButton = null;
-        }
-        speechListener.setListeningSpeech(false, 0);
-        speechListener.removeListener(this);
-        ACPreference.removeListener(this);
-        this.unregisterReceiver(mBroadcastReceiver);
-        instance = null;
-    }
-
-    public BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent myIntent) {
-
-            if (myIntent.getAction().equals(BCAST_CONFIGCHANGED)) {
-                Log.d(TAG, "received->" + BCAST_CONFIGCHANGED);
-                cmdInterpretor.removeListener(mScreenMapper);
-                displayGridOverlay();
-
-            }
-        }
-    };
+//-------------------------------------------------- setting changed --------------------------------------
 
 
     @Override
@@ -235,6 +235,110 @@ public class ACService extends Service implements ISpeechResultListener, ISettin
     @Override
     public void onSecondaryClick() {
         stopService(new Intent(this, ACService.class));
+    }
+
+    //--------------------- RESULT LISTENING ----------------
+
+    @Override
+    public void onResult(EResult result, String commandKey, String details) {
+        showCommandResult(result, commandKey, details);
+    }
+
+    @Override
+    public void onResult(EResult result, int commandKey, String details) {
+        showCommandResult(result, getString(commandKey), details);
+    }
+
+    @Override
+    public void onResult(EResult result, int commandKey, int details) {
+        showCommandResult(result, getString(commandKey), getString(details));
+    }
+
+    private void showCommandResult(EResult result, String key, String detail) {
+        try {
+            switch (result) {
+                case SUCCESS:
+                    Toast.makeText(this, detail, Toast.LENGTH_LONG).show();
+                    audioPlayer.start(this, R.raw.success);
+                    break;
+                case FAIL:
+                    Toast.makeText(this, getString(R.string.command_failed) + key + " " + detail, Toast.LENGTH_LONG).show();
+                    audioPlayer.start(this, R.raw.failed);
+                    break;
+                case MALFORMED:
+                    Toast.makeText(this, getString(R.string.command_malformed) + key + " " + detail, Toast.LENGTH_LONG).show();
+                    audioPlayer.start(this, R.raw.error);
+                    break;
+            }
+        } catch (IOException e) {
+            Log.e(TAG, "error playing CMD result", e);
+        }
+    }
+
+
+    // ---------------------- MANUAL COMMAND INPUT --------------------
+
+    public void showWriteCommandDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.write_a_command);
+
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(input);
+
+        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                ArrayList<String> result = new ArrayList<String>();
+                result.add(input.getText().toString());
+                onInputCmd(result);
+            }
+        });
+        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+        dialog.show();
+    }
+// ------------------------------------------- BroadCast registering --------------------
+
+    public void registerBroadcast(String receverKey, BroadcastReceiver receiver, IntentFilter filter) {
+        if (!broadcastList.containsKey(receverKey)) {
+            broadcastList.put(receverKey, receiver);
+            registerReceiver(receiver, filter);
+        }
+    }
+
+//-------------------------------------------------- DESTROY --------------------------------------
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        cmdInterpretor.endAllConnections();
+        cmdInterpretor.removeListener(mScreenMapper);
+        if (mScreenMapper != null) {
+            ((WindowManager) getSystemService(WINDOW_SERVICE)).removeView(mScreenMapper);
+            mScreenMapper = null;
+        }
+
+        if (mCmdButton != null) {
+            ((WindowManager) getSystemService(WINDOW_SERVICE)).removeView(mCmdButton);
+            mCmdButton = null;
+        }
+        speechListener.setListeningSpeech(false, 0);
+        speechListener.removeListener(this);
+        ACPreference.removeListener(this);
+
+        // this.unregisterReceiver(mBroadcastReceiver);
+        for (BroadcastReceiver receveir : broadcastList.values()) {
+            this.unregisterReceiver(receveir);
+        }
+        audioPlayer.destroy();
+        instance = null;
     }
 
 }
